@@ -1,21 +1,21 @@
-; === CLEAN UP DEFAULTS ===
+;; === CLEAN UP DEFAULTS ===
 
 (scroll-bar-mode -1) ;; Turn off scroll bar on the side
 (tool-bar-mode -1) ;; Hide toolbar
 (tooltip-mode -1) ;; Hide tooltips
 (menu-bar-mode -1) ;; Hide menubar
+(setq inhibit-startup-message t) ;; Hide welcome message
 
 ;; (set-fringe-mode 10)  ;; idk what this does
-;; (setq inhibit-startup-message t) ;; Hide welcome message
 
 
 
 ;; === THEME ===
 
 (load-theme 'wombat)
-
 (setq visible-bell t) ;; Flash when backspace on empty line
-
+(custom-set-variables
+ '(initial-frame-alist (quote ((fullscreen . maximized)))))
 
 
 ;; === PACKAGE STUFF ===
@@ -80,12 +80,50 @@
   (ivy-mode 1))
 
 ;; === MODELINE ===
+(use-package diminish
+  :ensure t)
+(use-package spaceline
+  :ensure t)
+(use-package powerline
+  :ensure t
+  :init
+  (spaceline-spacemacs-theme)
+  :hook
+  ('after-init-hook) . 'powerline-reset)
 
 
 
 ;; === SYNTAX HIGHLIGHTING ===
 (use-package nix-mode
   :mode "\\.nix\\'")
+
+
+
+;; === MAIL ===
+
+
+
+;; === HOMEPAGE ===
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-banner-logo-title "An Emacs Distro for Devilish Users") ;; Welcome message
+  (setq dashboard-startup-banner "~/.emacs.d/logo.png") ;; Remilia picture from PaperJoey on DeviantArt, original by Shingo
+  (setq dashboard-center-content t) ;; Center content of homepage
+  (setq dashboard-show-shortcuts nil) ;; Remove shortcut hints
+  (setq dashboard-set-footer nil) ;; Disables messages at the bottom
+  (setq dashboard-set-init-info t) 
+  (setq dashboard-init-info (format "%d youkai entered Gensokyou in %s"
+				    (length package-activated-list) (emacs-init-time))) ;; Show # of packages loaded, and boot time
+  (setq dashboard-set-navigator t) 
+  (setq dashboard-navigator-buttons
+	`(;; line1
+	  ((,nil
+	    "Config"
+	    "Edit Emacs Config File init.el"
+	    (lambda (&rest _) (find-file "~/.emacs.d/init.el"))
+	    `default)))))
 
 
 
@@ -96,7 +134,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(nix-mode ivy evil use-package)))
+ '(package-selected-packages '(spaceline powerline nix-mode ivy evil use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
