@@ -1,3 +1,12 @@
+#+TITLE: Emacs Config
+#+PROPERTY: header-args :tangle init.el
+
+* Welcome to the (insert future name here) config
+  (Future name) is now configured by rendering the code blocks here in the org config files.
+
+* Setup Package Usage
+** Allow external package to be used/setup package mirrors
+#+BEGIN_SRC emacs-lisp
 ;; Initialize Package Sources
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
@@ -12,7 +21,11 @@
   (package-install 'use-package))
 (require 'use-package)
 (setq use-package-always-ensure t)
+#+END_SRC
 
+** Auto Update Packages
+   I have this disabled because I personally don't like automatic updates
+#+BEGIN_SRC emacs-lisp
 ;; (use-package auto-package-update
   ;; :defer nil
   ;; :ensure t
@@ -20,45 +33,89 @@
   ;; (setq auto-package-update-delete-old-versions t)
   ;; (setq auto-package-update-hide-results t)
   ;; (auto-package-update-maybe))
+#+END_SRC
 
+** Try to not load packages
+   This is an attempt to speed up boot time
+#+BEGIN_SRC emacs-lisp
 (setq use-package-always-defer t) ;; Try to speed boot
+#+END_SRC
 
+* Keybinds
+** Evil Mode 
+   This gives emacs vim like keybindings
+#+BEGIN_SRC emacs-lisp
 (use-package evil
   :ensure t
   :defer nil
   :init
   :config
   (evil-mode 1))
+#+END_SRC
 
+** Fix undo/redo
+   Evil mode breaks undo/redo, this fixes it
+#+BEGIN_SRC emacs-lisp
 (use-package undo-tree
   :ensure t
   :diminish undo-tree-mode)
 (global-undo-tree-mode)
 (define-key evil-normal-state-map "u" 'undo-tree-undo)
 (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
+#+END_SRC
 
+** Copy Paste
+   Enables Copy pasting to and from emacs
+#+BEGIN_SRC emacs-lisp
 (setq x-select-enable-clipboard t)
+#+END_SRC
 
+* Appearance
+** Clean up some of the default garbage
+#+BEGIN_SRC emacs-lisp
 (scroll-bar-mode -1) ;; Turn off scroll bar on the side
 (tool-bar-mode -1) ;; Hide toolbar
 (tooltip-mode -1) ;; Hide tooltips
 (menu-bar-mode -1) ;; Hide menubar
-(setq inhibit-startup-message t)
-
+(setq inhibit-startup-message t) 
+#+END_SRC
+** Set the theme
+   Currently I'm using the default gruvbox theme, however I intend to make a custom one in the future
+#+BEGIN_SRC emacs-lisp
 (use-package gruvbox-theme
   :ensure t)
 (load-theme 'gruvbox-dark-medium t)
-
+#+END_SRC
+** Line numbers
+#+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'text-mode-hook 'display-line-numbers-mode)
-
+#+END_SRC
+** Other
+*** Prettify Symbols
+    This takes this such as lambda and turns them into their actual symbols 
+#+BEGIN_SRC emacs-lisp
 (global-prettify-symbols-mode t)
-
+#+END_SRC
+*** Visible-bell
+    This flashes the top and bottom of the screen when you do weird things, such as hitting backspace on an empty line.
+#+BEGIN_SRC emacs-lisp
 (setq visible-bell t)
+#+END_SRC
 
+* File Management
+** Swiper
+   Swiper is a cool little package that allows you to search a document for text. To navigate it, use the arrow keys or C-n and C-p and hit enter to go to the specified location
+#+BEGIN_SRC emacs-lisp
 (use-package swiper 
   :ensure t)
+#+END_SRC
 
+** Treemacs
+   Treemacs in a good package similar to the vim extension nerdtree. It gives a minimal sidebar file explorer, which is really easy and simple to use. If ever confused, press ? in the buffer.
+   To navigate treemacs, use j and k to move down and up, and h and l to move in and out of directories. Use M-0 to go to the treemacs buffer, even if it isn't open. To hide/unhide dotfiles, press t h.
+   I believe most of this comes from Witchmacs or the GNU treemacs wiki.
+#+BEGIN_SRC emacs-lisp
 (use-package treemacs
   :ensure t
   :defer t
@@ -84,7 +141,12 @@
     :after treemacs dired
     :ensure t
     :config (treemacs-icons-dired-mode))
+#+END_SRC
 
+* Prompt
+** Ivy
+   The code here is mostly taken from some YouTube video
+#+BEGIN_SRC emacs-lisp
 (use-package ivy
   :diminish
   :bind (
@@ -102,27 +164,49 @@
 	 ("C-d" . Ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
+#+END_SRC
 
+** Quit prompt
+   Allows prompts to be quit using escape, which really should be a default
+#+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+#+END_SRC
 
+** Which Key
+   Gives suggestions on what commands to use
+#+BEGIN_SRC emacs-lisp
 (use-package which-key
   :ensure t
   :diminish which-key-mode
   :init
   (which-key-mode))
+#+END_SRC
 
-(setq electric-pair-pairs '(
-							(?\{ . ?\})
-							(?\( . ?\))
-							(?\[ . ?\])
-							(?\" . ?\")
-							))
-(electric-pair-mode t)
-(show-paren-mode 1)
+* Autocompletion
+** Brackets
+  Match bracket pairs in a non stupid way, as well as highlight the matching bracket
+#+BEGIN_SRC emacs-lisp
+  (setq electric-pair-pairs '(
+							  (?\{ . ?\})
+							  (?\( . ?\))
+							  (?\[ . ?\])
+							  (?\" . ?\")
+							  ))
+  (electric-pair-mode t)
+  (show-paren-mode 1) 
+#+END_SRC
 
+* Modeline
+** Diminish
+   Diminish keeps the modeline clean from displaying a stupid number of modes you have enables
+#+BEGIN_SRC emacs-lisp
 (use-package diminish
   :ensure t)
+#+END_SRC
 
+** Modeline theme
+   Currently this is pretty much just copied from WitchMacs, however I am planning to change this to make my own sometime in the near future
+#+BEGIN_SRC emacs-lisp
 (use-package spaceline
   :ensure t)
 (use-package powerline
@@ -131,10 +215,19 @@
   (spaceline-spacemacs-theme)
   :hook
   ('after-init-hook) . 'powerline-reset)
+#+END_SRC
 
+* Syntax Highlighting
+** Nix
+   Gives syntax highlighting to .nix files such as configuration.nix
+#+BEGIN_SRC emacs-lisp
 (use-package nix-mode
   :mode "\\.nix\\'")
+#+END_SRC
 
+* Homepage
+  This is the code that give the beautiful startup window when you load into emacs
+#+BEGIN_SRC emacs-lisp
 (use-package dashboard
   :ensure t
   :preface
@@ -177,16 +270,29 @@
   (setq dashboard-footer-messages '("What, you don't have any manga or anything?"
 				    "Fairies are completely useless."
 				    "You know, watermelons look more like slices of meat than grapes."
-				    "I rather dislike the sun...")))
+				    "I rather dislike the sun..."))) 
 
+#+END_SRC
+
+* Magit
+  This section is very much a work in progress, however here is the current code for Magit
+#+BEGIN_SRC emacs-lisp
 (use-package magit
   :ensure t)
+#+END_SRC
 
+* Recent Files
+  Setup support for accessing recent files, as well as how many should be stored
+#+BEGIN_SRC emacs-lisp
 (recentf-mode 1)
 (setq recentf-max-menu-items 20)
 (setq recentf-max-saved-items 50)
 ;; (define-key evil-normal-state-map "\C-t" 'recentf-open-files)
+#+END_SRC
 
+* Eshell
+  Currently this is just copied from Witchmacs while I learn to figure this stuff out, but here is the code for the current Eshell Setup
+#+BEGIN_SRC emacs-lisp
 (setq eshell-prompt-regexp "^[^αλ\n]*[αλ] ")
 (setq eshell-prompt-function
       (lambda nil
@@ -213,7 +319,11 @@
     (switch-to-buffer-other-window "*eshell*")))
 
 (global-set-key (kbd "<s-C-return>") 'eshell-other-window)
+#+END_SRC
 
+* EMMS
+  Emms is the music player for emacs, which runs with mpd. The current setup is borked and just doesn't work, but here is the WIP code
+#+BEGIN_SRC emacs-lisp
 (use-package emms
   :defer t
   :init
@@ -232,7 +342,13 @@
   (emms-all)
   (emms-history-load)
   (emms-default-players))
+#+END_SRC
 
+* Mail
+  Currently I don't have mu4e setup but this is where it will be
+* Shouldn't touch
+  Apparently this stuff shouldn't be touched and there sould only be 1 of each of these
+#+BEGIN_SRC emacs-lisp
 (custom-set-faces
   )
 (custom-set-variables
@@ -241,3 +357,4 @@
  '(initial-frame-alist '((fullscreen . maximized)))
  '(package-selected-packages
    '(emms treemacs-icons-dired treemacs-evil treemacs gruvbox-theme magit undo-tree swiper which-key spaceline powerline nix-mode ivy evil use-package)))
+#+END_SRC

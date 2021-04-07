@@ -40,6 +40,8 @@ git clone https://github.com/Ocillacubes/Emacs ~/.emacs.d && emacs
 - Better documentation
 - Move config to .org files
 - Music player
+- Setup mu4e for mail
+- Rss Feeds 
 
 ** Screenshots
    [[./ss_home.png]]
