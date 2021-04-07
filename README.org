@@ -1,0 +1,46 @@
+[[./logo.png]]
+
+* Welcome to my Emacs Config
+  I really need to come up with a name for this
+
+** What is this?
+   This is the repos for my emcas dotfiles. If you don't know what emacs is, it's a "text editor" that's actually a emacs lisp interpreter, meaning it can do pretty much anything
+
+** Why not just use something like Doom Emacs or Spacemacs?
+   Those are probably better distributions of Emacs, but I like creating my own configs for stuff mostly from scratch, as I like knowing exactly what's in my configs. Also I wanted to have Remelia on the homepage, and I think others would as well.
+
+** How do I install this
+   MAKE SURE TO BACK UP ANY EXISTING EMACS CONFIG. Then simply run the following:
+   #+BEGIN_SRC bash
+git clone https://github.com/Ocillacubes/Emacs ~/.emacs.d && emacs
+   #+END_SRC
+   This clones the repo to your ~/.emacs.d directory, which is where your emacs config files go.
+** What are the features of this distribution?
+*** Current:
+    Remilia on the homepage
+    Agenda/Recent files on the homepage
+    Treemacs
+    Gruvbox theme
+    Evil mode
+    Quit prompts with escape
+    Search documents with swiper
+    Smart bracket pairing
+    Nix config syntax highlighting
+    Nice bottom bar
+    Remelia quotes on homepage
+    Fixed redo
+    Eshell
+    Copy paste outside emacs
+    Start fullscreen
+    
+*** Planned: 
+    Better keybindings
+    Make the cursor switch to new buffers when they open
+    Come up with a name
+    Better documentation
+    Move config to .org files
+    Music player
+
+** Screenshots
+   [[./ss_home.png]]
+   [[./ss_editor.png]]

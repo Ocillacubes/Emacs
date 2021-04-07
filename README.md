@@ -1,2 +1,0 @@
-# Emacs
-Emacs Config
