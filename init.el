@@ -1,13 +1,12 @@
-;; Initialize Package Sources
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-	   ("org" . "https://orgmode.org/elpa/")
-	   ("elpa" . "https://elpa.gnu.org/packages/")))
+      ("org" . "https://orgmode.org/elpa/")
+      ("elpa" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
-;; Refresh packages if they're not there (or something like that)
+
 (unless package-archive-contents
   (package-refresh-contents))
-;; Initialize use-package on non-Linux
+
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (require 'use-package)
@@ -21,7 +20,22 @@
   ;; (setq auto-package-update-hide-results t)
   ;; (auto-package-update-maybe))
 
-(setq use-package-always-defer t) ;; Try to speed boot
+(scroll-bar-mode -1) 
+(tool-bar-mode -1) 
+(tooltip-mode -1) 
+(menu-bar-mode -1) 
+(setq inhibit-startup-message t)
+
+(use-package gruvbox-theme
+  :ensure t)
+(load-theme 'gruvbox-dark-medium t)
+
+(setq visible-bell t) ;; Flash when backspace on empty line
+
+(global-prettify-symbols-mode t) ;; Make words show as their symbols ie lambda will show up as it's symbol
+
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
 
 (use-package evil
   :ensure t
@@ -30,35 +44,14 @@
   :config
   (evil-mode 1))
 
-(use-package undo-tree
-  :ensure t
-  :diminish undo-tree-mode)
-(global-undo-tree-mode)
-(define-key evil-normal-state-map "u" 'undo-tree-undo)
-(define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (setq x-select-enable-clipboard t)
-
-(scroll-bar-mode -1) ;; Turn off scroll bar on the side
-(tool-bar-mode -1) ;; Hide toolbar
-(tooltip-mode -1) ;; Hide tooltips
-(menu-bar-mode -1) ;; Hide menubar
-(setq inhibit-startup-message t)
-
-(use-package gruvbox-theme
-  :ensure t)
-(load-theme 'gruvbox-dark-medium t)
-
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'text-mode-hook 'display-line-numbers-mode)
-
-(global-prettify-symbols-mode t)
-
-(setq visible-bell t)
 
 (use-package swiper 
   :ensure t)
 
+;; Treemacs
 (use-package treemacs
   :ensure t
   :defer t
@@ -71,7 +64,7 @@
     )
   :bind
   (:map global-map
-	("M-0"       . treemacs-select-window)
+	("M-0"       . treemacs-select-window) 
         ("C-x t 1"   . treemacs-delete-other-windows)
         ("C-x t t"   . treemacs)
         ("C-x t B"   . treemacs-bookmark)
@@ -85,9 +78,9 @@
     :ensure t
     :config (treemacs-icons-dired-mode))
 
-(use-package ivy
+(use-package ivy ;; this section taken from YT tutorial
   :diminish
-  :bind (
+  :bind (("C-s" . swiper)
 	 :map ivy-minibuffer-map
 	 ("TAB" . ivy-alt-done)
 	 ("C-l" . ivy-alt-done)
@@ -102,8 +95,6 @@
 	 ("C-d" . Ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
-
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (use-package which-key
   :ensure t
@@ -120,9 +111,8 @@
 (electric-pair-mode t)
 (show-paren-mode 1)
 
-(use-package diminish
+(use-package diminish  ;; Keep the line from getting cluttered with modes
   :ensure t)
-
 (use-package spaceline
   :ensure t)
 (use-package powerline
@@ -132,7 +122,7 @@
   :hook
   ('after-init-hook) . 'powerline-reset)
 
-(use-package nix-mode
+(use-package nix-mode ;; .nix
   :mode "\\.nix\\'")
 
 (use-package dashboard
@@ -145,18 +135,18 @@
     (lisp-interaction-mode))
   :config
   (dashboard-setup-startup-hook)
-  (setq dashboard-banner-logo-title "An Emacs Distro for the Devilish User")
-  (setq dashboard-startup-banner "~/.emacs.d/logo.png")
-  (setq dashboard-center-content t)
-  (setq dashboard-show-shortcuts nil)
+  (setq dashboard-banner-logo-title "An Emacs Distro for the Devilish User") 
+  (setq dashboard-startup-banner "~/.emacs.d/logo.png") 
+  (setq dashboard-center-content t) 
+  (setq dashboard-show-shortcuts nil) 
   ;; (setq dashboard-set-footer nil) ;; Disables messages at the bottom
   (setq dashboard-set-init-info t) 
   (setq dashboard-init-info (format "%d youkai entered Gensokyou in %s"
-				    (length package-activated-list) (emacs-init-time)))
+				    (length package-activated-list) (emacs-init-time))) 
   (setq dashboard-set-navigator t) 
-  (setq dashboard-items '((recents . 3) ;; Set what content to display
+  (setq dashboard-items '((recents . 3)
 			  (agenda . 5)))
-  (setq dashboard-navigator-buttons ;; The buttons under the logo
+  (setq dashboard-navigator-buttons
 	`(;; line1
 	  ((,nil
 	    "Config"
@@ -182,24 +172,26 @@
 (use-package magit
   :ensure t)
 
-(recentf-mode 1)
-(setq recentf-max-menu-items 20)
-(setq recentf-max-saved-items 50)
-;; (define-key evil-normal-state-map "\C-t" 'recentf-open-files)
+(use-package undo-tree
+  :ensure t
+  :diminish undo-tree-mode)
+(global-undo-tree-mode)
+(define-key evil-normal-state-map "u" 'undo-tree-undo)
+(define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
 
 (setq eshell-prompt-regexp "^[^αλ\n]*[αλ] ")
 (setq eshell-prompt-function
       (lambda nil
-        (concat
-         (if (string= (eshell/pwd) (getenv "HOME"))
-             (propertize "~" 'face `(:foreground "#99CCFF"))
-           (replace-regexp-in-string
-            (getenv "HOME")
-            (propertize "~" 'face `(:foreground "#99CCFF"))
-            (propertize (eshell/pwd) 'face `(:foreground "#99CCFF"))))
-         (if (= (user-uid) 0)
-             (propertize " α " 'face `(:foreground "#FF6666"))
-         (propertize " λ " 'face `(:foreground "#A6E22E"))))))
+	(concat
+	 (if (string= (eshell/pwd) (getenv "HOME"))
+	     (propertize "~" 'face `(:foreground "#99CCFF"))
+	   (replace-regexp-in-string
+	    (getenv "HOME")
+	    (propertize "~" 'face `(:foreground "#99CCFF"))
+	    (propertize (eshell/pwd) 'face `(:foreground "#99CCFF"))))
+	 (if (= (user-uid) 0)
+	     (propertize " α " 'face `(:foreground "#FF6666"))
+	 (propertize " λ " 'face `(:foreground "#A6E22E"))))))
 
 (setq eshell-highlight-prompt nil)
 (defun eshell-other-window ()
@@ -207,9 +199,9 @@
   (interactive)
   (if (not (get-buffer "*eshell*"))
       (progn
-        (split-window-sensibly (selected-window))
-        (other-window 1)
-        (eshell))
+	(split-window-sensibly (selected-window))
+	(other-window 1)
+	(eshell))
     (switch-to-buffer-other-window "*eshell*")))
 
 (global-set-key (kbd "<s-C-return>") 'eshell-other-window)
@@ -219,7 +211,7 @@
   :init
   (setq emms-directory (concat user-emacs-directory "emms"))
   (setq emms-playlist-buffer-name "*Music*")
-  (setq emms-browser-covers #'emms-browser-cache-thumbnail-async) ;; Give album covers
+  (setq emms-browser-covers #'emms-browser-cache-thumbnail-async) 
   :bind
   (:map emms-playlist-mode-map
 	("d" . emms-play-directory)
@@ -233,10 +225,21 @@
   (emms-history-load)
   (emms-default-players))
 
+(setq use-package-always-defer t) ;; Try to speed boot by not loading some packages
 (custom-set-faces
-  )
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+;; Only have this once, carefule not to screw it up
 (custom-set-variables
-'(custom-safe-themes
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
    '("7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
  '(initial-frame-alist '((fullscreen . maximized)))
  '(package-selected-packages
