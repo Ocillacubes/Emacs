@@ -4,3 +4,5 @@ transient/
 *recentf
 *recentf~
 *tmp
+.cache/
+eshell/

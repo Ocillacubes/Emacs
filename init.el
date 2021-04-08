@@ -1,7 +1,7 @@
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-      ("org" . "https://orgmode.org/elpa/")
-      ("elpa" . "https://elpa.gnu.org/packages/")))
+						 ("org" . "https://orgmode.org/elpa/")
+						 ("elpa" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 
 (unless package-archive-contents
@@ -13,12 +13,12 @@
 (setq use-package-always-ensure t)
 
 ;; (use-package auto-package-update
-  ;; :defer nil
-  ;; :ensure t
-  ;; :config
-  ;; (setq auto-package-update-delete-old-versions t)
-  ;; (setq auto-package-update-hide-results t)
-  ;; (auto-package-update-maybe))
+;; :defer nil
+;; :ensure t
+;; :config
+;; (setq auto-package-update-delete-old-versions t)
+;; (setq auto-package-update-hide-results t)
+;; (auto-package-update-maybe))
 
 (scroll-bar-mode -1) 
 (tool-bar-mode -1) 
@@ -32,7 +32,7 @@
 
 (setq visible-bell t) ;; Flash when backspace on empty line
 
-(global-prettify-symbols-mode t) ;; Make words show as their symbols ie lambda will show up as it's symbol
+(global-prettify-symbols-mode t)
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'text-mode-hook 'display-line-numbers-mode)
@@ -48,6 +48,9 @@
 
 (setq x-select-enable-clipboard t)
 
+(setq-default tab-width 4)
+(setq-default standard-indent 4)
+
 (use-package swiper 
   :ensure t)
 
@@ -58,41 +61,41 @@
   :init
   :config
   (progn
-    (setq ;; treemacs-show-hidden-files     t
-	  treemacs-width                 30)
-    (treemacs-resize-icons 11)
-    )
+	(setq ;; treemacs-show-hidden-files     t
+	 treemacs-width                 30)
+	(treemacs-resize-icons 11)
+	)
   :bind
   (:map global-map
-	("M-0"       . treemacs-select-window) 
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t B"   . treemacs-bookmark)
-        ("M-f"       . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
+		("M-0"       . treemacs-select-window) 
+		("C-x t 1"   . treemacs-delete-other-windows)
+		("C-x t t"   . treemacs)
+		("C-x t B"   . treemacs-bookmark)
+		("M-f"       . treemacs-find-file)
+		("C-x t M-t" . treemacs-find-tag)))
 (use-package treemacs-evil
   :after treemacs evil
-    :ensure t)
-  (use-package treemacs-icons-dired
-    :after treemacs dired
-    :ensure t
-    :config (treemacs-icons-dired-mode))
+  :ensure t)
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :ensure t
+  :config (treemacs-icons-dired-mode))
 
 (use-package ivy ;; this section taken from YT tutorial
   :diminish
   :bind (("C-s" . swiper)
-	 :map ivy-minibuffer-map
-	 ("TAB" . ivy-alt-done)
-	 ("C-l" . ivy-alt-done)
-	 ("C-j" . ivy-next-line)
-	 ("C-k" . ivy-previous-line)
-	 :map ivy-switch-buffer-map
-	 ("C-l" . ivy-alt-done)
-	 ("C-k" . ivy-previous-line)
-	 ("C-d" . ivy-switch-buffer-kill)
-	 :map ivy-reverse-i-search-map
-	 ("C-k" . ivy-previous-line)
-	 ("C-d" . Ivy-reverse-i-search-kill))
+		 :map ivy-minibuffer-map
+		 ("TAB" . ivy-alt-done)
+		 ("C-l" . ivy-alt-done)
+		 ("C-j" . ivy-next-line)
+		 ("C-k" . ivy-previous-line)
+		 :map ivy-switch-buffer-map
+		 ("C-l" . ivy-alt-done)
+		 ("C-k" . ivy-previous-line)
+		 ("C-d" . ivy-switch-buffer-kill)
+		 :map ivy-reverse-i-search-map
+		 ("C-k" . ivy-previous-line)
+		 ("C-d" . Ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
 
@@ -129,10 +132,10 @@
   :ensure t
   :preface
   (defun create-scratch-buffer ()
-    "Create a scratch buffer"
-    (interactive)
-    (switch-to-buffer (get-buffer-create "*scratch*"))
-    (lisp-interaction-mode))
+	"Create a scratch buffer"
+	(interactive)
+	(switch-to-buffer (get-buffer-create "*scratch*"))
+	(lisp-interaction-mode))
   :config
   (dashboard-setup-startup-hook)
   (setq dashboard-banner-logo-title "An Emacs Distro for the Devilish User") 
@@ -142,32 +145,36 @@
   ;; (setq dashboard-set-footer nil) ;; Disables messages at the bottom
   (setq dashboard-set-init-info t) 
   (setq dashboard-init-info (format "%d youkai entered Gensokyou in %s"
-				    (length package-activated-list) (emacs-init-time))) 
+									(length package-activated-list) (emacs-init-time))) 
   (setq dashboard-set-navigator t) 
   (setq dashboard-items '((recents . 3)
-			  (agenda . 5)))
+						  (agenda . 5)))
   (setq dashboard-navigator-buttons
-	`(;; line1
-	  ((,nil
-	    "Config"
-	    "Edit Emacs Config File init.el"
-	    (lambda (&rest _) (find-file "~/.emacs.d/init.el"))
-	    'default)
-	   (nil
-	    "Github"
-	    "Visit our github"
-	    (lambda (&rest _) (browse-url "https://github.com/Ocillacubes/Emacs"))
-	    'default)
-	   (nil
-	    "Scratchpad"
-	    "Open a scratch buffer"
-	    (lambda (&rest _) (create-scratch-buffer))
-	    'default)
-	   )))
+		`(;; line1
+		  ((,nil
+			"Config"
+			"Edit Emacs Config File init.el"
+			(lambda (&rest _) (find-file "~/.emacs.d/init.org"))
+			'default)
+		   (nil
+			"Scratchpad"
+			"Open a scratch buffer"
+			(lambda (&rest _) (create-scratch-buffer))
+			'default)
+		   (nil
+			"Todo"
+			"Open the TODO list file"
+			(lambda (&rest _) (find-file "~/docs/org/TODO.org"))
+			'default))
+		  ((,nil ;;line 2
+			"Githhub"
+			"Visit the github repo"
+			(lambda (&rest _) (browse-url "https://github.com/Ocillacubes/Emacs"))
+			'default))))
   (setq dashboard-footer-messages '("What, you don't have any manga or anything?"
-				    "Fairies are completely useless."
-				    "You know, watermelons look more like slices of meat than grapes."
-				    "I rather dislike the sun...")))
+									"Fairies are completely useless."
+									"You know, watermelons look more like slices of meat than grapes."
+									"I rather dislike the sun...")))
 
 (use-package magit
   :ensure t)
@@ -181,28 +188,28 @@
 
 (setq eshell-prompt-regexp "^[^αλ\n]*[αλ] ")
 (setq eshell-prompt-function
-      (lambda nil
-	(concat
-	 (if (string= (eshell/pwd) (getenv "HOME"))
-	     (propertize "~" 'face `(:foreground "#99CCFF"))
-	   (replace-regexp-in-string
-	    (getenv "HOME")
-	    (propertize "~" 'face `(:foreground "#99CCFF"))
-	    (propertize (eshell/pwd) 'face `(:foreground "#99CCFF"))))
-	 (if (= (user-uid) 0)
-	     (propertize " α " 'face `(:foreground "#FF6666"))
-	 (propertize " λ " 'face `(:foreground "#A6E22E"))))))
+	  (lambda nil
+		(concat
+		 (if (string= (eshell/pwd) (getenv "HOME"))
+			 (propertize "~" 'face `(:foreground "#99CCFF"))
+		   (replace-regexp-in-string
+			(getenv "HOME")
+			(propertize "~" 'face `(:foreground "#99CCFF"))
+			(propertize (eshell/pwd) 'face `(:foreground "#99CCFF"))))
+		 (if (= (user-uid) 0)
+			 (propertize " α " 'face `(:foreground "#FF6666"))
+		   (propertize " λ " 'face `(:foreground "#A6E22E"))))))
 
 (setq eshell-highlight-prompt nil)
 (defun eshell-other-window ()
   "Create or visit an eshell buffer."
   (interactive)
   (if (not (get-buffer "*eshell*"))
-      (progn
-	(split-window-sensibly (selected-window))
-	(other-window 1)
-	(eshell))
-    (switch-to-buffer-other-window "*eshell*")))
+	  (progn
+		(split-window-sensibly (selected-window))
+		(other-window 1)
+		(eshell))
+	(switch-to-buffer-other-window "*eshell*")))
 
 (global-set-key (kbd "<s-C-return>") 'eshell-other-window)
 
@@ -214,16 +221,19 @@
   (setq emms-browser-covers #'emms-browser-cache-thumbnail-async) 
   :bind
   (:map emms-playlist-mode-map
-	("d" . emms-play-directory)
-	("p" . emms-start)
-	("k" . emms-previous)
-	("j" . emms-next)
-	("x" . emms-shuffle)
-	("s" . emms-stop))
+		("d" . emms-play-directory)
+		("p" . emms-start)
+		("k" . emms-previous)
+		("j" . emms-next)
+		("x" . emms-shuffle)
+		("s" . emms-stop))
   :config
   (emms-all)
   (emms-history-load)
   (emms-default-players))
+
+;;(add-hook 'org-mode-hook 'electric-indent-mode nil)
+;;(add-hook 'org-mode-hook (lambda () (setq indent-tabs-mode t)))
 
 (setq use-package-always-defer t) ;; Try to speed boot by not loading some packages
 (custom-set-faces
