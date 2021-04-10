@@ -136,6 +136,12 @@
 (use-package haskell-mode
   :mode "\\.hs\\'")
 
+(use-package rainbow-mode
+  :ensure t
+  :diminish rainbow-mode
+  :init
+  (rainbow-mode))
+
 (use-package dashboard
   :ensure t
   :preface

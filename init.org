@@ -174,7 +174,7 @@
 	 (electric-pair-mode t)
 	 (show-paren-mode 1) 
    #+END_SRC
-
+   
 ** Syntax Checking
 *** Flycheck
 **** Main
@@ -225,6 +225,15 @@
 # 	   :mode "\\.go\\'")
 #    #+END_SRC
 
+** Colors
+   Highlight hex color values with the appropriate colors. 
+   #+BEGIN_SRC emacs-lisp
+	 (use-package rainbow-mode
+	   :ensure t
+	   :diminish rainbow-mode
+	   :init
+	   (rainbow-mode))
+   #+END_SRC
 * Dashboard
   This is the epic startpage with Remilia you see when booting Emacs
   #+BEGIN_SRC emacs-lisp
