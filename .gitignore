@@ -7,3 +7,4 @@ transient/
 .cache/
 eshell/
 auto*/
+.lsp*

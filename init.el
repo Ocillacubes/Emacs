@@ -111,12 +111,27 @@
 (electric-pair-mode t)
 (show-paren-mode 1)
 
+(use-package company)
+(setq company-idle-delay 0)
+(setq company-minimum-prefix-length 1)
+
+(use-package lsp-mode)
+(use-package lsp-ui)
+
+(defun lsp-go-install-save-hooks () -- Taken from an article on GeekSocket by Bhavin Gandhi
+	   (add-hook 'before-save-hook #'lsp-format-buffer t t)
+	   (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook #'lsp-deferred)
+
 (use-package flycheck)
-(global-flycheck-mode)
+;; (global-flycheck-mode)
 
 (use-package flycheck-haskell)
+(add-hook 'haskell-mode-hook 'flycheck-mode)
 (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
 
+(add-hook 'python-mode-hook 'flycheck-mode)
 (add-hook 'python-mode-hook #'flycheck-python-setup)
 
 (use-package diminish  ;; Keep the line from getting cluttered with modes
@@ -135,6 +150,8 @@
 
 (use-package haskell-mode
   :mode "\\.hs\\'")
+
+(use-package go-mode)
 
 (use-package rainbow-mode
   :ensure t
@@ -188,7 +205,8 @@
   (setq dashboard-footer-messages '("What, you don't have any manga or anything?"
 									"Fairies are completely useless."
 									"You know, watermelons look more like slices of meat than grapes."
-									"I rather dislike the sun...")))
+									"I rather dislike the sun..."))) 
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))) ;; Allow emacs to load dashboard when running as a daemon
 
 (use-package magit
   :ensure t)
@@ -271,6 +289,16 @@
 
 (setq make-backup-files nil)
 (setq auto-save-default nil)
+
+(setenv "PATH"
+		(concat
+		 (getenv "PATH")
+		 ":" (getenv "HOME") "/go/bin"
+		 )
+		)
+(setenv "GOPATH"
+		(concat
+		 (getenv "HOME") "/go/bin"))
 
 (setq use-package-always-defer t) ;; Try to speed boot by not loading some packages
 (custom-set-faces
