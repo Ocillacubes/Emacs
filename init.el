@@ -48,9 +48,6 @@
 
 (setq x-select-enable-clipboard t)
 
-(setq-default tab-width 4)
-(setq-default standard-indent 4)
-
 (use-package swiper 
   :ensure t)
 
@@ -114,6 +111,14 @@
 (electric-pair-mode t)
 (show-paren-mode 1)
 
+(use-package flycheck)
+(global-flycheck-mode)
+
+(use-package flycheck-haskell)
+(add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
+
+(add-hook 'python-mode-hook #'flycheck-python-setup)
+
 (use-package diminish  ;; Keep the line from getting cluttered with modes
   :ensure t)
 (use-package spaceline
@@ -125,8 +130,11 @@
   :hook
   ('after-init-hook) . 'powerline-reset)
 
-(use-package nix-mode ;; .nix
+(use-package nix-mode
   :mode "\\.nix\\'")
+
+(use-package haskell-mode
+  :mode "\\.hs\\'")
 
 (use-package dashboard
   :ensure t
@@ -214,12 +222,10 @@
 (global-set-key (kbd "<s-C-return>") 'eshell-other-window)
 
 (use-package emms
-  :defer t
-  :init
-  (setq emms-directory (concat user-emacs-directory "emms"))
-  (setq emms-playlist-buffer-name "*Music*")
-  (setq emms-browser-covers #'emms-browser-cache-thumbnail-async) 
+  :ensure t
   :bind
+  ("s-m p" . emms)
+  ("s-m b" . emms-smart-browse)
   (:map emms-playlist-mode-map
 		("d" . emms-play-directory)
 		("p" . emms-start)
@@ -228,12 +234,37 @@
 		("x" . emms-shuffle)
 		("s" . emms-stop))
   :config
+  (require 'emms-setup)
   (emms-all)
-  (emms-history-load)
-  (emms-default-players))
+  (setq emms-player-list '(emms-player-mpd))
+  (setq emms-info-functions '(emms-info-mpd))
+  (require 'emms-player-mpd))
+(setq mpc-host "localhost:6600")
+(defun mpd/update-database ()
+  "Updates the MPD Database"
+  (interactive)
+  (call-process "mpc" nil nil nil "update")
+  (message "Updated MPD database"))
+(global-set-key (kbd "s-m u") 'mpd/update-database)
+(defun mpd/start-music-daemon ()
+  "Start MPD, connect to it, and sync"
+  (interactive)
+  (shell-command "mpd")
+  (mpd/update-database)
+  (emms-player-mpd-connect)
+  (emms-cache-set-from-mpd-all)
+  (message "Initialized MPD"))
+(global-set-key (kbd "s-m c") 'mpd/start-music-daemon)
+(defun mpd/kill-music-daemon ()
+  "Stops music and yeets MPD"
+  (interactive)
+  (emms-stop)
+  (call-process "killall" nil nil nil "mpd")
+  (message "Killed MPD"))
+(global-set-key (kbd "s-m k") 'mpd/kill-music-daemon)
 
-;;(add-hook 'org-mode-hook 'electric-indent-mode nil)
-;;(add-hook 'org-mode-hook (lambda () (setq indent-tabs-mode t)))
+(setq make-backup-files nil)
+(setq auto-save-default nil)
 
 (setq use-package-always-defer t) ;; Try to speed boot by not loading some packages
 (custom-set-faces
@@ -252,5 +283,6 @@
  '(custom-safe-themes
    '("7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
  '(initial-frame-alist '((fullscreen . maximized)))
+ '(tab-width 4)
  '(package-selected-packages
    '(emms treemacs-icons-dired treemacs-evil treemacs gruvbox-theme magit undo-tree swiper which-key spaceline powerline nix-mode ivy evil use-package)))
