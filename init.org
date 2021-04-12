@@ -186,7 +186,11 @@
    LSP (Language Server Protocol) gives emacs features like auto complete and stuff
    #+BEGIN_SRC emacs-lisp
 	 (use-package lsp-mode)
-	 (use-package lsp-ui)
+	 (use-package lsp-ui
+	   :ensure t
+	   :diminish
+	   :config
+	   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
    #+END_SRC
 *** Go
 	#+BEGIN_SRC emacs-lisp
@@ -196,6 +200,15 @@
 	  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 	  (add-hook 'go-mode-hook #'lsp-deferred)
 	#+END_SRC
+*** Python
+	#+BEGIN_SRC emacs-lisp
+	  (use-package lsp-python-ms
+		:ensure t
+		:init (setq lsp-python-ms-auto-install-server t)
+		:hook (python-mode . (lambda ()
+							   (require 'lsp-python-ms)
+							   (lsp))))
+	#+END_SRC 
 ** Syntax Checking
 *** Flycheck
 **** Main
@@ -211,9 +224,22 @@
 	 #+END_SRC
 **** Python
 	 #+BEGIN_SRC emacs-lisp
-	   (add-hook 'python-mode-hook 'flycheck-mode)
-	   (add-hook 'python-mode-hook #'flycheck-python-setup)
+       ;;(add-hook 'python-mode-hook 'flycheck-mode)
+	   ;;(add-hook 'python-mode-hook #'flycheck-python-setup)
 	 #+END_SRC
+   
+** Web Mode
+   Check out https://web-mode.org/ to read up on how to use this. It adds some cool features for working with web files
+   #+BEGIN_SRC emacs-lisp
+	 (use-package web-mode)
+	 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+	 (setq web-mode-extra-auto-pairs
+		   '(("erb"  . (("beg" "end")))
+			 ("php"  . (("beg" "end")
+						("beg" "end")))
+			 ))
+	 (setq web-mode-enable-auto-pairing t)
+   #+END_SRC
 * Modeline
   Currently using the suggested theme from WitchMacs, but plan to make a custom one later
   #+BEGIN_SRC emacs-lisp
@@ -241,13 +267,6 @@
 	 (use-package haskell-mode
 	   :mode "\\.hs\\'")
    #+END_SRC
-   # ** Go
-   #    Sytanx highlighting support for go
-   #    #+BEGIN_SRC emacs-lisp
-   # 	 (use-package go-mode
-   # 	   :mode "\\.go\\'")
-   #    #+END_SRC
-
 ** Go
    Syntax Checking for go
    #+BEGIN_SRC emacs-lisp
@@ -319,7 +338,8 @@
   This basically just enables it, I currently haven't tested magit out yet so once I figure it out I'll add some more stuff here
   #+BEGIN_SRC emacs-lisp
 	(use-package magit
-	  :ensure t)
+	  :ensure t
+	  :diminish)
   #+END_SRC
 
 * Undo/Redo
@@ -332,7 +352,7 @@
 	(define-key evil-normal-state-map "u" 'undo-tree-undo)
 	(define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
   #+END_SRC
-
+  
 * Eshell
   Eshell give you a basic shell in emacs, although a lot of things break in it. Only use it for basic commands. As of right now, this is pretty much just the WitchMacs cfg until I figure more out with it
   #+BEGIN_SRC emacs-lisp
@@ -409,7 +429,7 @@
 	  (message "Killed MPD"))
 	(global-set-key (kbd "s-m k") 'mpd/kill-music-daemon)
   #+END_SRC
-
+  
 * mu4e
   Mu4e is a mail client for emails, based off mu (mu for emacs). As with most stuff in this config, it's currently a very WIP
 * Org Mode

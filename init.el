@@ -116,13 +116,24 @@
 (setq company-minimum-prefix-length 1)
 
 (use-package lsp-mode)
-(use-package lsp-ui)
+(use-package lsp-ui
+  :ensure t
+  :diminish
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (defun lsp-go-install-save-hooks () -- Taken from an article on GeekSocket by Bhavin Gandhi
 	   (add-hook 'before-save-hook #'lsp-format-buffer t t)
 	   (add-hook 'before-save-hook #'lsp-organize-imports t t))
 (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 (add-hook 'go-mode-hook #'lsp-deferred)
+
+(use-package lsp-python-ms
+  :ensure t
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+						 (require 'lsp-python-ms)
+						 (lsp))))
 
 (use-package flycheck)
 ;; (global-flycheck-mode)
@@ -131,8 +142,17 @@
 (add-hook 'haskell-mode-hook 'flycheck-mode)
 (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
 
-(add-hook 'python-mode-hook 'flycheck-mode)
-(add-hook 'python-mode-hook #'flycheck-python-setup)
+;;(add-hook 'python-mode-hook 'flycheck-mode)
+;;(add-hook 'python-mode-hook #'flycheck-python-setup)
+
+(use-package web-mode)
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(setq web-mode-extra-auto-pairs
+	  '(("erb"  . (("beg" "end")))
+		("php"  . (("beg" "end")
+				   ("beg" "end")))
+		))
+(setq web-mode-enable-auto-pairing t)
 
 (use-package diminish  ;; Keep the line from getting cluttered with modes
   :ensure t)
@@ -209,7 +229,8 @@
 (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))) ;; Allow emacs to load dashboard when running as a daemon
 
 (use-package magit
-  :ensure t)
+  :ensure t
+  :diminish)
 
 (use-package undo-tree
   :ensure t
