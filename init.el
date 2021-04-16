@@ -33,7 +33,19 @@
 (nvmap :prefix "SPC" ;; very original yes
 "SPC"    '(counsel-M-x :which-key "M-x")
 "f f"    '(find-file :which-key "Find File")
-"o t"    '(org-babel-tangel :which-key "Tangle Org File"))
+"o t"    '(org-babel-tangle :which-key "Tangle Org File")
+"s"      '(swiper :which-key "Swiper")
+;; Windows
+"w c"    '(evil-window-delete :which-key "Close Window")
+"w n"    '(evil-window-new :which-key "New Window")
+"w s"    '(evil-window-split :which-key "Horizontal Split")
+"w v"    '(evil-window-vsplit :which-key "Vertical Split")
+"w h"    '(evil-window-left :which-key "Left Window")
+"w j"    '(evil-window-down :which-key "Down Window")
+"w k"    '(evil-window-up :which-key "Up Window")
+"w l"    '(evil-window-right :which-key "Right Window")
+"w w"    '(evil-window-next :which-key "Next Window")
+)
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -144,3 +156,5 @@
 (use-package projectile
   :config
   (projectile-global-mode 1))
+
+(use-package swiper)
