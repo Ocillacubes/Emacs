@@ -1,7 +1,7 @@
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("org" . "https://orgmode.org/elpa/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")))
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 (unless package-archive-contents
   (package-refresh-contents))
@@ -25,6 +25,15 @@
 
 (global-set-key (kbd "C-=") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
+
+(use-package general
+  :config
+  (general-evil-setup t))
+
+(nvmap :prefix "SPC" ;; very original yes
+"SPC"    '(counsel-M-x :which-key "M-x")
+"f f"    '(find-file :which-key "Find File")
+"o t"    '(org-babel-tangel :which-key "Tangle Org File"))
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -91,6 +100,8 @@
 
 (setq scroll-conservatively 101) ;; value greater than 100 gets rid of half page jumping
 
+(use-package all-the-icons)
+
 (use-package which-key)
 (which-key-mode)
 
@@ -133,16 +144,3 @@
 (use-package projectile
   :config
   (projectile-global-mode 1))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(projectile which-key use-package undo-tree org-bullets gruvbox-theme evil-collection dashboard)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
