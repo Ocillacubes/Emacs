@@ -1,0 +1,212 @@
+#+TITLE: Ocillacube's Emacs Config v2.0
+#+PROPERTY: header-args :tangle init.el
+* Packages
+** Setup package sources
+   #+BEGIN_SRC emacs-lisp
+   (require 'package)
+   (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                            ("org" . "https://orgmode.org/elpa/")
+                            ("elpa" . "https://elpa.gnu.org/packages/")))
+   (package-initialize)
+   (unless package-archive-contents
+     (package-refresh-contents))
+   #+END_SRC
+** Setup use-package
+   Use package is a nicer way of managing the packages in emacs. Also enables always ensure so that packages get downloaded automatically
+   #+BEGIN_SRC emacs-lisp
+   (unless (package-installed-p 'use-package)
+     (package-install 'use-package))
+   (setq use-package-always-ensure t)
+   #+END_SRC
+
+* Keybindings
+** Evil mode
+   Gives emacs vim keybinds, making it actually useable
+   #+BEGIN_SRC emacs-lisp
+   (use-package evil
+     :init
+     (setq evil-want-integration t)
+     (setq evil-want-keybinding nil)
+     :config
+     (evil-mode 1))
+   (use-package evil-collection
+     :after evil
+     :config
+     (evil-collection-init))
+   #+END_SRC
+** Escape Quits
+   Use escape to quit prompts
+   #+BEGIN_SRC emacs-lisp
+   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+   #+END_SRC
+** Zoom
+   Keybinds for zooming in/out
+   #+BEGIN_SRC emacs-lisp
+   (global-set-key (kbd "C-=") 'text-scale-increase)
+   (global-set-key (kbd "C--") 'text-scale-decrease)
+   #+END_SRC
+* Appearance
+** Get rid of the default garbage
+   #+BEGIN_SRC emacs-lisp
+   (menu-bar-mode -1)
+   (tool-bar-mode -1)
+   (scroll-bar-mode -1)
+   (setq inhibit-startup-message t) 
+   (tooltip-mode -1) 
+   #+END_SRC
+** Line numbers
+   #+BEGIN_SRC emacs-lisp
+   (global-display-line-numbers-mode 1)
+   #+END_SRC
+** Wrap lines
+   #+BEGIN_SRC emacs-lisp
+   (global-visual-line-mode t)
+   #+END_SRC
+** Theme
+   Currently using gruvbox theme until I get my custom theme setup
+   #+BEGIN_SRC emacs-lisp
+   (use-package gruvbox-theme)
+   (load-theme 'gruvbox-dark-medium t)
+   #+END_SRC
+
+** Pretty Symbols
+   Make symbols show up as their symbols
+   #+BEGIN_SRC emacs-lisp
+   (global-prettify-symbols-mode t)
+   #+END_SRC
+** Dashboard
+   Setup the home screen shown when loading emacs
+   #+BEGIN_SRC emacs-lisp
+   (use-package dashboard
+     :ensure t
+     :preface
+     (defun create-scratch-buffer ()
+       "Create a scratch buffer"
+       (interactive)
+       (switch-to-buffer (get-buffer-create "*scratch*"))
+       (lisp-interaction-mode))
+     :config
+     (dashboard-setup-startup-hook)
+     (setq dashboard-banner-logo-title "An Emacs Distro for the Devilish User") 
+     (setq dashboard-startup-banner "~/.emacs.d/logo.png") 
+     (setq dashboard-center-content t) 
+     (setq dashboard-show-shortcuts nil) 
+     (setq dashboard-set-init-info t) 
+     (setq dashboard-init-info (format "%d youkai entered Gensokyou in %s"
+				       (length package-activated-list) (emacs-init-time))) 
+     (setq dashboard-set-navigator t) 
+     (setq dashboard-items '((recents . 3)
+			     (agenda . 5)))
+     (setq dashboard-navigator-buttons
+	   `(;; line1
+	     ((,nil
+	       "Config"
+	       "Edit Emacs Config File init.el"
+	       (lambda (&rest _) (find-file "~/.emacs.d/init.org"))
+	       'default)
+	      (nil
+	       "Scratchpad"
+	       "Open a scratch buffer"
+	       (lambda (&rest _) (create-scratch-buffer))
+	       'default)
+	      (nil
+	       "Todo"
+	       "Open the TODO list file"
+	       (lambda (&rest _) (find-file "~/docs/org/TODO.org"))
+	       'default))
+	     ((,nil ;;line 2
+	       "Githhub"
+	       "Visit the github repo"
+	       (lambda (&rest _) (browse-url "https://github.com/Ocillacubes/Emacs"))
+	       'default))))
+     (setq dashboard-footer-messages '("What, you don't have any manga or anything?"
+				       "Fairies are completely useless."
+				       "You know, watermelons look more like slices of meat than grapes."
+				       "I rather dislike the sun..."))) 
+   (setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))) ;; Allow emacs to load dashboard when running as a daemon
+   #+END_SRC
+** Scrolling
+   Make the scrolling in emacs less dumb
+   #+BEGIN_SRC emacs-lisp
+   (setq scroll-conservatively 101) ;; value greater than 100 gets rid of half page jumping
+   #+END_SRC
+* Autocomplete
+** Which Key
+   Displays keybinds that come after what you've pressed so far
+   #+BEGIN_SRC emacs-lisp
+   (use-package which-key)
+   (which-key-mode)
+   #+END_SRC
+* Syntax Highlighting
+* Behavior
+** Copy/Paste
+   Enable support for copy pasting between emacs and the regualr clipboard
+   #+BEGIN_SRC emacs-lisp
+   (setq x-select-enable-clipboard t)
+   #+END_SRC
+** Undo/Redo
+   Makes undo/redo work better with evil mode
+   #+BEGIN_SRC emacs-lisp
+   (use-package undo-tree
+     :ensure t
+     :diminish undo-tree-mode)
+   (global-undo-tree-mode)
+   (define-key evil-normal-state-map "u" 'undo-tree-undo)
+   (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
+   #+END_SRC
+
+** Backup Files
+   Stop backup files filling up everywhere
+   #+BEGIN_SRC emacs-lisp
+   (setq make-backup-files nil)
+   (setq auto-save-default nil)
+   #+END_SRC
+
+** Brackets
+   Pair brackets together and highlight matching brackets
+   #+begin_src emacs-lisp
+   (setq electric-pair-pairs '(
+			       (?\{ . ?\})
+			       (?\( . ?\))
+			       (?\[ . ?\])
+			       (?\" . ?\")
+			       ))
+   (electric-pair-mode t)
+   (show-paren-mode 1) 
+   #+end_src
+* Org Mode
+** Org Tempo
+   This allows creating of source blocks with <sTAB , as well as other similar things
+   #+BEGIN_SRC emacs-lisp
+   (use-package org-tempo
+     :ensure nil)
+   #+END_SRC
+** Native syntax highlighting
+   Use the language's syntax highlighting for code blocks
+   #+begin_src emacs-lisp
+   (setq org-src-fontify-natively t
+	 org-src-tab-acts-natively t
+	 org-confirm-babel-evaluate nil
+	 org-edit-src-content-indentation 0)
+   #+end_src
+** Bullets
+   Makes * ** etc appears as bullet points rather than *s
+   #+begin_src emacs-lisp
+   (use-package org-bullets)
+   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+   #+end_src
+** Indents
+   #+begin_src emacs-lisp
+   (add-hook 'org-mode-hook 'org-indent-mode)
+   #+end_src
+** Org directory
+   #+begin_src emacs-lisp
+   (setq org-directory "~/docs/org")
+   #+end_src
+* Projectile
+  Projectile is a tool for managing "projects" and easily working with files in one.
+  #+begin_src emacs-lisp
+  (use-package projectile
+    :config
+    (projectile-global-mode 1))
+  #+end_src
