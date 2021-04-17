@@ -36,6 +36,7 @@
   "f d"    '(dired :which-key "Open dired")
   "f t"    '(treemacs :which-key "Open treemacs")
   "o t"    '(org-babel-tangle :which-key "Tangle Org File")
+  "o i"    '(org-toggle-inline-images :which-key "Show/Hide img (org)")
   "s"      '(swiper :which-key "Search in File")
   "r r"    '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
   "h h"    '(mark-whole-buffer :which-key "Select the entire file")
@@ -289,16 +290,3 @@
 		   ("beg" "end")))
 	))
 (setq web-mode-enable-auto-pairing t)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(web-mode flycheck-haskell flycheck lsp-python-ms lsp-ui lsp-mode company go-mode haskell-mode nix-mode spaceline diminish treemacs-icons-dired treemacs-evil treemacs which-key vterm use-package undo-tree projectile org-bullets gruvbox-theme general evil-collection eshell-syntax-highlighting dired-open dashboard counsel all-the-icons-dired)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

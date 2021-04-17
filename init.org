@@ -1,5 +1,18 @@
 #+TITLE: Ocillacube's Emacs Config v2.0
 #+PROPERTY: header-args :tangle init.el
+
+[[./logo.png]]
+* Welcome to my Emacs config
+** How to setup
+First BACK UP your existing emacs config, and run `git clone https://github.com/Ocillacubes/Emacs ~/.emacs.d && emacs`
+** Screenshots
+** Planned features:
+- Take new screenshots
+- mu4e
+- Rss feed built in
+- Come up with a name
+
+
 * Packages
 ** Setup package sources
 #+BEGIN_SRC emacs-lisp
@@ -61,6 +74,7 @@ Package for setting keybinds, this section based off the config DT wrote on stre
   "f d"    '(dired :which-key "Open dired")
   "f t"    '(treemacs :which-key "Open treemacs")
   "o t"    '(org-babel-tangle :which-key "Tangle Org File")
+  "o i"    '(org-toggle-inline-images :which-key "Show/Hide img (org)")
   "s"      '(swiper :which-key "Search in File")
   "r r"    '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
   "h h"    '(mark-whole-buffer :which-key "Select the entire file")
