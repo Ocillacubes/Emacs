@@ -75,9 +75,11 @@
 
 (global-visual-line-mode t)
 
-(use-package autothemer)
-(add-to-list 'custom-theme-load-path "~/.emacs.d")
-  (load-theme 'remi t)
+;; (use-package autothemer)
+;; (add-to-list 'custom-theme-load-path "~/.emacs.d")
+;; (load-theme 'remi t)
+(use-package gruvbox-theme)
+(load-theme 'gruvbox-dark-medium t)
 
 (global-prettify-symbols-mode t)
 
@@ -258,9 +260,9 @@
 (use-package go-mode)
 
 (use-package rainbow-mode
-	   :diminish rainbow-mode
-	   :init
-	   (rainbow-mode))
+  :diminish rainbow-mode
+  :init
+  (rainbow-mode))
 
 (use-package company)
 (setq company-idle-delay 0)
@@ -304,7 +306,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(web-mode flycheck-haskell flycheck lsp-python-ms lsp-ui lsp-mode company rainbow-mode go-mode haskell-mode nix-mode vterm eshell-syntax-highlighting treemacs-icons-dired treemacs-evil treemacs dired-open all-the-icons-dired projectile org-bullets undo-tree counsel which-key spaceline diminish all-the-icons dashboard autothemer general evil-collection evil use-package)))
+   '(gruvbox-theme web-mode flycheck-haskell flycheck lsp-python-ms lsp-ui lsp-mode company rainbow-mode go-mode haskell-mode nix-mode vterm eshell-syntax-highlighting treemacs-icons-dired treemacs-evil treemacs dired-open all-the-icons-dired projectile org-bullets undo-tree counsel which-key spaceline diminish all-the-icons dashboard autothemer general evil-collection evil use-package)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

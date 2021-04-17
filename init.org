@@ -122,9 +122,11 @@ Package for setting keybinds, this section based off the config DT wrote on stre
 #+END_SRC
 ** Theme
 #+BEGIN_SRC emacs-lisp
-(use-package autothemer)
-(add-to-list 'custom-theme-load-path "~/.emacs.d")
-(load-theme 'remi t)
+;; (use-package autothemer)
+;; (add-to-list 'custom-theme-load-path "~/.emacs.d")
+;; (load-theme 'remi t)
+(use-package gruvbox-theme)
+(load-theme 'gruvbox-dark-medium t)
 #+END_SRC
 ** Pretty Symbols
 Make symbols show up as their symbols
