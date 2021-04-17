@@ -31,21 +31,27 @@
   (general-evil-setup t))
 
 (nvmap :prefix "SPC" ;; very original yes
-"SPC"    '(counsel-M-x :which-key "M-x")
-"f f"    '(find-file :which-key "Find File")
-"o t"    '(org-babel-tangle :which-key "Tangle Org File")
-"s"      '(swiper :which-key "Swiper")
-;; Windows
-"w c"    '(evil-window-delete :which-key "Close Window")
-"w n"    '(evil-window-new :which-key "New Window")
-"w s"    '(evil-window-split :which-key "Horizontal Split")
-"w v"    '(evil-window-vsplit :which-key "Vertical Split")
-"w h"    '(evil-window-left :which-key "Left Window")
-"w j"    '(evil-window-down :which-key "Down Window")
-"w k"    '(evil-window-up :which-key "Up Window")
-"w l"    '(evil-window-right :which-key "Right Window")
-"w w"    '(evil-window-next :which-key "Next Window")
-)
+  "SPC"    '(counsel-M-x :which-key "M-x") ;; Broken
+  "f f"    '(find-file :which-key "Find File")
+  "o t"    '(org-babel-tangle :which-key "Tangle Org File")
+  "s"      '(swiper :which-key "Search in File")
+  "r r"    '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+  "h h"    '(mark-whole-buffer :which-key "Select the entire file")
+  "\\"     '(indent-region :which-key "Auto indent everything")
+
+  "w c"    '(evil-window-delete :which-key "Close Window")
+  "w n"    '(evil-window-new :which-key "New Window")
+  "w s"    '(evil-window-split :which-key "Horizontal Split")
+  "w v"    '(evil-window-vsplit :which-key "Vertical Split")
+  "w h"    '(evil-window-left :which-key "Left Window")
+  "w j"    '(evil-window-down :which-key "Down Window")
+  "w k"    '(evil-window-up :which-key "Up Window")
+  "w l"    '(evil-window-right :which-key "Right Window")
+  "w w"    '(evil-window-next :which-key "Next Window")
+
+  "t t"      '(vterm :which-key "Open terminal emulator")
+  "t e"      '(eshell :which-key "Open eshell")
+  )
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
@@ -59,6 +65,7 @@
 
 (use-package gruvbox-theme)
 (load-theme 'gruvbox-dark-medium t)
+;;(load-theme 'adwaita)
 
 (global-prettify-symbols-mode t)
 
@@ -117,11 +124,31 @@
 (use-package which-key)
 (which-key-mode)
 
+(use-package counsel
+  :config (counsel-mode))
+(use-package ivy
+  :diminish
+  :bind (
+	 :map ivy-minibuffer-map
+	 ("TAB" . ivy-alt-done)
+	 ("C-l" . ivy-alt-done)
+	 ("C-j" . ivy-next-line)
+	 ("C-k" . ivy-previous-line)
+	 :map ivy-switch-buffer-map
+	 ("C-l" . ivy-alt-done)
+	 ("C-k" . ivy-previous-line)
+	 ("C-d" . ivy-switch-buffer-kill)
+	 :map ivy-reverse-i-search-map
+	 ("C-k" . ivy-previous-line)
+	 ("C-d" . Ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
+
 (setq x-select-enable-clipboard t)
 
 (use-package undo-tree
   :ensure t
-  :diminish undo-tree-mode)
+  :diminish)
 (global-undo-tree-mode)
 (define-key evil-normal-state-map "u" 'undo-tree-undo)
 (define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
@@ -158,3 +185,15 @@
   (projectile-global-mode 1))
 
 (use-package swiper)
+
+(setq shell-file-name "/bin/zsh"
+      vterm-max-scrollback 1000)
+
+(use-package eshell-syntax-highlighting
+  :after esh-mode
+  :config
+  (eshell-syntax-highlighting-global-mode +1))
+(setq eshell-aliases-file "~/.emacs.d/eshell_alias"
+      eshell-history-size 1000)
+
+(use-package vterm)
