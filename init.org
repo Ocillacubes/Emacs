@@ -80,6 +80,8 @@ Package for setting keybinds, this section based off the config DT wrote on stre
   "h h"    '(mark-whole-buffer :which-key "Select the entire file")
   "\\"     '(indent-region :which-key "Auto indent everything")
   "e"      '(eww :which-key "Open Browser")
+  ";"      '(comment-line :which-key "Comment Line")
+  "r c"    '(rainbow-mode :which-key "Toggle Rainbox Mode")
 
   "w c"    '(evil-window-delete :which-key "Close Window")
   "w n"    '(evil-window-new :which-key "New Window")
@@ -119,13 +121,11 @@ Package for setting keybinds, this section based off the config DT wrote on stre
 (global-visual-line-mode t)
 #+END_SRC
 ** Theme
-Currently using gruvbox theme until I get my custom theme setup
 #+BEGIN_SRC emacs-lisp
-(use-package gruvbox-theme)
-(load-theme 'gruvbox-dark-medium t)
-;;(load-theme 'adwaita)
+(use-package autothemer)
+(add-to-list 'custom-theme-load-path "~/.emacs.d")
+(load-theme 'remi t)
 #+END_SRC
-
 ** Pretty Symbols
 Make symbols show up as their symbols
 #+BEGIN_SRC emacs-lisp
@@ -395,6 +395,14 @@ Here I have things that are useful specifically for programming, such as LSP, sy
 *** Go
 #+begin_src emacs-lisp
 (use-package go-mode)
+#+end_src
+*** Rainbow Mode
+Highlight hex colors with their appropriate colors
+#+begin_src emacs-lisp
+(use-package rainbow-mode
+  :diminish rainbow-mode
+  :init
+  (rainbow-mode))
 #+end_src
 ** Company
 Company gives a big large drop down menu to choose from

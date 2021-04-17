@@ -42,6 +42,8 @@
   "h h"    '(mark-whole-buffer :which-key "Select the entire file")
   "\\"     '(indent-region :which-key "Auto indent everything")
   "e"      '(eww :which-key "Open Browser")
+  ";"      '(comment-line :which-key "Comment Line")
+  "r c"    '(rainbow-mode :which-key "Toggle Rainbox Mode")
 
   "w c"    '(evil-window-delete :which-key "Close Window")
   "w n"    '(evil-window-new :which-key "New Window")
@@ -73,9 +75,9 @@
 
 (global-visual-line-mode t)
 
-(use-package gruvbox-theme)
-(load-theme 'gruvbox-dark-medium t)
-;;(load-theme 'adwaita)
+(use-package autothemer)
+(add-to-list 'custom-theme-load-path "~/.emacs.d")
+  (load-theme 'remi t)
 
 (global-prettify-symbols-mode t)
 
@@ -255,6 +257,11 @@
 
 (use-package go-mode)
 
+(use-package rainbow-mode
+	   :diminish rainbow-mode
+	   :init
+	   (rainbow-mode))
+
 (use-package company)
 (setq company-idle-delay 0)
 (setq company-minimum-prefix-length 1)
@@ -291,3 +298,16 @@
 		   ("beg" "end")))
 	))
 (setq web-mode-enable-auto-pairing t)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(web-mode flycheck-haskell flycheck lsp-python-ms lsp-ui lsp-mode company rainbow-mode go-mode haskell-mode nix-mode vterm eshell-syntax-highlighting treemacs-icons-dired treemacs-evil treemacs dired-open all-the-icons-dired projectile org-bullets undo-tree counsel which-key spaceline diminish all-the-icons dashboard autothemer general evil-collection evil use-package)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
