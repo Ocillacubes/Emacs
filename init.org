@@ -1,481 +1,440 @@
-#+TITLE: Emacs Config
+#+TITLE: Ocillacube's Emacs Config v2.0
 #+PROPERTY: header-args :tangle init.el
-
-* Welcome to my Emacs Config File
-  I really need to come Up with a name for this thing
-  To recompile this document into init.el after making changes, head up to line 2 and press C-c C-c. After this run org-babel-tangle, and stuff should work.
-
-
-* Get Packages Working
-** Initialize package sources
-   #+BEGIN_SRC emacs-lisp
-	 (require 'package)
-	 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-							  ("org" . "https://orgmode.org/elpa/")
-							  ("elpa" . "https://elpa.gnu.org/packages/")))
-	 (package-initialize)
-   #+END_SRC
-** Refresh packages
-   #+BEGIN_SRC emacs-lisp
-	 (unless package-archive-contents
-	   (package-refresh-contents))
-   #+END_SRC
+* Packages
+** Setup package sources
+#+BEGIN_SRC emacs-lisp
+(require 'package)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+(package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
+#+END_SRC
 ** Setup use-package
-   #+BEGIN_SRC emacs-lisp
-	 (unless (package-installed-p 'use-package)
-	   (package-install 'use-package))
-	 (require 'use-package)
-	 (setq use-package-always-ensure t)
-   #+END_SRC
-** Auto updates
-   Disabled as I don't like auto updates
-   #+BEGIN_SRC emacs-lisp
-	 ;; (use-package auto-package-update
-	 ;; :defer nil
-	 ;; :ensure t
-	 ;; :config
-	 ;; (setq auto-package-update-delete-old-versions t)
-	 ;; (setq auto-package-update-hide-results t)
-	 ;; (auto-package-update-maybe))
-   #+END_SRC
+Use package is a nicer way of managing the packages in emacs. Also enables always ensure so that packages get downloaded automatically
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+(setq use-package-always-ensure t)
+#+END_SRC
 
-* Theme
-** Clean up defaults
-   #+BEGIN_SRC emacs-lisp
-	 (scroll-bar-mode -1) 
-	 (tool-bar-mode -1) 
-	 (tooltip-mode -1) 
-	 (menu-bar-mode -1) 
-	 (setq inhibit-startup-message t) 
-   #+END_SRC
-** Enable gruvbox
-   I'm planning to replace gruvbox with a custom theme in the near future, but for now this looks fine
-   #+BEGIN_SRC emacs-lisp
-	 (use-package gruvbox-theme
-	   :ensure t)
-	 (load-theme 'gruvbox-dark-medium t)
-   #+END_SRC
+* Keybindings
+** Evil mode
+Gives emacs vim keybinds, making it actually useable
+#+BEGIN_SRC emacs-lisp
+(use-package evil
+  :init
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-mode 1))
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
+#+END_SRC
+** Escape Quits
+Use escape to quit prompts
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+#+END_SRC
+** Zoom
+Keybinds for zooming in/out
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-=") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+#+END_SRC
+** General
+Package for setting keybinds, this section based off the config DT wrote on stream
+*** Enable the package
+#+begin_src emacs-lisp
+(use-package general
+  :config
+  (general-evil-setup t))
+#+end_src
+*** Configure keybinds
+#+begin_src emacs-lisp
+(nvmap :prefix "SPC"
+  "SPC"    '(counsel-M-x :which-key "M-x") ;; Broken
+  "f f"    '(find-file :which-key "Find File")
+  "f d"    '(dired :which-key "Open dired")
+  "f t"    '(treemacs :which-key "Open treemacs")
+  "o t"    '(org-babel-tangle :which-key "Tangle Org File")
+  "s"      '(swiper :which-key "Search in File")
+  "r r"    '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
+  "h h"    '(mark-whole-buffer :which-key "Select the entire file")
+  "\\"     '(indent-region :which-key "Auto indent everything")
 
-** Visible bell
-   Flashes on the top and bottom of the screen when doing weird things like hitting back on empty lines
-   #+BEGIN_SRC emacs-lisp
-	 (setq visible-bell t) ;; Flash when backspace on empty line
-   #+END_SRC
+  "w c"    '(evil-window-delete :which-key "Close Window")
+  "w n"    '(evil-window-new :which-key "New Window")
+  "w s"    '(evil-window-split :which-key "Horizontal Split")
+  "w v"    '(evil-window-vsplit :which-key "Vertical Split")
+  "w h"    '(evil-window-left :which-key "Left Window")
+  "w j"    '(evil-window-down :which-key "Down Window")
+  "w k"    '(evil-window-up :which-key "Up Window")
+  "w l"    '(evil-window-right :which-key "Right Window")
+  "w w"    '(evil-window-next :which-key "Next Window")
+
+  "t t"      '(vterm :which-key "Open terminal emulator")
+  "t e"      '(eshell :which-key "Open eshell")
+
+  "b b"      '(ibuffer :which-key "List buffers")
+  "b c"      '(kill-current-buffer :which-key "Kill current buffer")
+  "b h"      '(previous-buffer :which-key "Preivous buffer")
+  "b l"      '(next-buffer :which-key "Next buffer")
+  )
+#+end_src
+* Appearance
+** Get rid of the default garbage
+#+BEGIN_SRC emacs-lisp
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(setq inhibit-startup-message t) 
+(tooltip-mode -1) 
+#+END_SRC
+** Line numbers
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
+#+END_SRC
+** Wrap lines
+#+BEGIN_SRC emacs-lisp
+(global-visual-line-mode t)
+#+END_SRC
+** Theme
+Currently using gruvbox theme until I get my custom theme setup
+#+BEGIN_SRC emacs-lisp
+(use-package gruvbox-theme)
+(load-theme 'gruvbox-dark-medium t)
+;;(load-theme 'adwaita)
+#+END_SRC
 
 ** Pretty Symbols
-   Makes words such as lambda show up as their symbols
-   #+BEGIN_SRC emacs-lisp
-	 (global-prettify-symbols-mode t) 
-   #+END_SRC
-** Numbers
-   Displays line numbers
-   #+BEGIN_SRC emacs-lisp
-	 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-	 (add-hook 'text-mode-hook 'display-line-numbers-mode)
-   #+END_SRC
-* Keybinds
-** Evil Mode
-   This give vim like keybinds because default emacs binds suck
-   #+BEGIN_SRC emacs-lisp
-	 (use-package evil
-	   :ensure t
-	   :defer nil
-	   :init
-	   :config
-	   (evil-mode 1))
-   #+END_SRC
-** Escape quits
-   Use escape to quit prompts
-   #+BEGIN_SRC emacs-lisp
-	 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-   #+END_SRC
-** Copy paste
-   This gives support for copy pasting between emacs and other programs
-   #+BEGIN_SRC emacs-lisp
-	 (setq x-select-enable-clipboard t) 
-   #+END_SRC
-* File Management
-** Swiper
-   Cool package for searching through text in a file. Use C-n and C-p or the arrow keys to navigate
-   #+BEGIN_SRC emacs-lisp
-	 (use-package swiper 
-	   :ensure t)
-   #+END_SRC
-** Treemacs
-   A file explorer similar to nerdtree in vim. Use j and k to move up and down, and h and l to move between directories. M-0 opens the buffer, whether or not treemacs is open. Press ? if you need help.
-   #+BEGIN_SRC emacs-lisp
-	 ;; Treemacs
-	 (use-package treemacs
-	   :ensure t
-	   :defer t
-	   :init
-	   :config
-	   (progn
-		 (setq ;; treemacs-show-hidden-files     t
-		  treemacs-width                 30)
-		 (treemacs-resize-icons 11)
-		 )
-	   :bind
-	   (:map global-map
-			 ("M-0"       . treemacs-select-window) 
-			 ("C-x t 1"   . treemacs-delete-other-windows)
-			 ("C-x t t"   . treemacs)
-			 ("C-x t B"   . treemacs-bookmark)
-			 ("M-f"       . treemacs-find-file)
-			 ("C-x t M-t" . treemacs-find-tag)))
-	 (use-package treemacs-evil
-	   :after treemacs evil
-	   :ensure t)
-	 (use-package treemacs-icons-dired
-	   :after treemacs dired
-	   :ensure t
-	   :config (treemacs-icons-dired-mode))
-   #+END_SRC
-* Autocompletion
-** Ivy
-   Gives an expanded prompt to show availible commands based off what you've typed so far
-   #+BEGIN_SRC emacs-lisp
-	 (use-package ivy ;; this section taken from YT tutorial
-	   :diminish
-	   :bind (("C-s" . swiper)
-			  :map ivy-minibuffer-map
-			  ("TAB" . ivy-alt-done)
-			  ("C-l" . ivy-alt-done)
-			  ("C-j" . ivy-next-line)
-			  ("C-k" . ivy-previous-line)
-			  :map ivy-switch-buffer-map
-			  ("C-l" . ivy-alt-done)
-			  ("C-k" . ivy-previous-line)
-			  ("C-d" . ivy-switch-buffer-kill)
-			  :map ivy-reverse-i-search-map
-			  ("C-k" . ivy-previous-line)
-			  ("C-d" . Ivy-reverse-i-search-kill))
-	   :config
-	   (ivy-mode 1))
-   #+END_SRC
+Make symbols show up as their symbols
+#+BEGIN_SRC emacs-lisp
+(global-prettify-symbols-mode t)
+#+END_SRC
+** Dashboard
+Setup the home screen shown when loading emacs
+#+BEGIN_SRC emacs-lisp
+(use-package dashboard
+  :preface
+  (defun create-scratch-buffer ()
+    "Create a scratch buffer"
+    (interactive)
+    (switch-to-buffer (get-buffer-create "*scratch*"))
+    (lisp-interaction-mode))
+  :config
+  (dashboard-setup-startup-hook)
+  (setq dashboard-banner-logo-title "An Emacs Distro for the Devilish User") 
+  (setq dashboard-startup-banner "~/.emacs.d/logo.png") 
+  (setq dashboard-center-content t) 
+  (setq dashboard-show-shortcuts nil) 
+  (setq dashboard-set-init-info t) 
+  (setq dashboard-init-info (format "%d youkai entered Gensokyou in %s"
+				    (length package-activated-list) (emacs-init-time))) 
+  (setq dashboard-set-navigator t) 
+  (setq dashboard-items '((recents . 3)
+			  (agenda . 5)))
+  (setq dashboard-navigator-buttons
+	`(;; line1
+	  ((,nil
+	    "Config"
+	    "Edit Emacs Config File init.el"
+	    (lambda (&rest _) (find-file "~/.emacs.d/init.org"))
+	    'default)
+	   (nil
+	    "Scratchpad"
+	    "Open a scratch buffer"
+	    (lambda (&rest _) (create-scratch-buffer))
+	    'default)
+	   (nil
+	    "Todo"
+	    "Open the TODO list file"
+	    (lambda (&rest _) (find-file "~/docs/org/TODO.org"))
+	    'default))
+	  ((,nil ;;line 2
+	    "Githhub"
+	    "Visit the github repo"
+	    (lambda (&rest _) (browse-url "https://github.com/Ocillacubes/Emacs"))
+	    'default))))
+  (setq dashboard-footer-messages '("What, you don't have any manga or anything?"
+				    "Fairies are completely useless."
+				    "You know, watermelons look more like slices of meat than grapes."
+				    "I rather dislike the sun..."))) 
+(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))) ;; Allow emacs to load dashboard when running as a daemon
+#+END_SRC
+
+** Scrolling
+Make the scrolling in emacs less dumb
+#+BEGIN_SRC emacs-lisp
+(setq scroll-conservatively 101) ;; value greater than 100 gets rid of half page jumping
+#+END_SRC
+** Icons
+Support for displaying icons
+#+begin_src emacs-lisp
+(use-package all-the-icons)
+#+end_src
+** Modeline
+Currently just the modeline suggested by witchmacs, but will make a custom one later
+#+begin_src emacs-lisp
+(use-package diminish)
+(use-package spaceline)
+(use-package powerline
+  :init
+  (spaceline-spacemacs-theme)
+  :hook
+  ('after-init-hook) . 'powerline-reset)
+#+end_src
+* Autocomplete
 ** Which Key
-   Gives suggestions on how to finish your command
-   #+BEGIN_SRC emacs-lisp
-	 (use-package which-key
-	   :ensure t
-	   :diminish which-key-mode
-	   :init
-	   (which-key-mode))
-   #+END_SRC
+Displays keybinds that come after what you've pressed so far
+#+BEGIN_SRC emacs-lisp
+(use-package which-key)
+(which-key-mode)
+#+END_SRC
+** Ivy
+Auto complete for M-x commands
+#+begin_src emacs-lisp
+(use-package counsel
+  :config (counsel-mode))
+(use-package ivy
+  :diminish
+  :bind (
+	 :map ivy-minibuffer-map
+	 ("TAB" . ivy-alt-done)
+	 ("C-l" . ivy-alt-done)
+	 ("C-j" . ivy-next-line)
+	 ("C-k" . ivy-previous-line)
+	 :map ivy-switch-buffer-map
+	 ("C-l" . ivy-alt-done)
+	 ("C-k" . ivy-previous-line)
+	 ("C-d" . ivy-switch-buffer-kill)
+	 :map ivy-reverse-i-search-map
+	 ("C-k" . ivy-previous-line)
+	 ("C-d" . Ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
+#+end_src
+* Behavior
+** Copy/Paste
+Enable support for copy pasting between emacs and the regualr clipboard
+#+BEGIN_SRC emacs-lisp
+(setq x-select-enable-clipboard t)
+#+END_SRC
+** Undo/Redo
+Makes undo/redo work better with evil mode
+#+BEGIN_SRC emacs-lisp
+(use-package undo-tree
+  :diminish)
+(global-undo-tree-mode)
+(define-key evil-normal-state-map "u" 'undo-tree-undo)
+(define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
+#+END_SRC
+
+** Backup Files
+Stop backup files filling up everywhere
+#+BEGIN_SRC emacs-lisp
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+#+END_SRC
+
 ** Brackets
-   Pairs brackets, as well as highlights the matching bracket
-   #+BEGIN_SRC emacs-lisp
-	 (setq electric-pair-pairs '(
-								 (?\{ . ?\})
-								 (?\( . ?\))
-								 (?\[ . ?\])
-								 (?\" . ?\")
-								 ))
-	 (electric-pair-mode t)
-	 (show-paren-mode 1) 
-   #+END_SRC
-   
-** Company
-   Company gives a big drop down menu with autocomplete suggestions
-   #+BEGIN_SRC emacs-lisp
-	 (use-package company)
-	 (setq company-idle-delay 0)
-	 (setq company-minimum-prefix-length 1)
-   #+END_SRC
-** LSP Setup
-   LSP (Language Server Protocol) gives emacs features like auto complete and stuff
-   #+BEGIN_SRC emacs-lisp
-	 (use-package lsp-mode)
-	 (use-package lsp-ui
-	   :ensure t
-	   :diminish
-	   :config
-	   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-   #+END_SRC
-*** Go
-	#+BEGIN_SRC emacs-lisp
-	  (defun lsp-go-install-save-hooks () -- Taken from an article on GeekSocket by Bhavin Gandhi
-			 (add-hook 'before-save-hook #'lsp-format-buffer t t)
-			 (add-hook 'before-save-hook #'lsp-organize-imports t t))
-	  (add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
-	  (add-hook 'go-mode-hook #'lsp-deferred)
-	#+END_SRC
-*** Python
-	#+BEGIN_SRC emacs-lisp
-	  (use-package lsp-python-ms
-		:ensure t
-		:init (setq lsp-python-ms-auto-install-server t)
-		:hook (python-mode . (lambda ()
-							   (require 'lsp-python-ms)
-							   (lsp))))
-	#+END_SRC 
-** Syntax Checking
-*** Flycheck
-**** Main
-	 #+BEGIN_SRC emacs-lisp
-	   (use-package flycheck)
-	   ;; (global-flycheck-mode)
-	 #+END_SRC
-**** Haskell
-	 #+BEGIN_SRC emacs-lisp
-	   (use-package flycheck-haskell)
-	   (add-hook 'haskell-mode-hook 'flycheck-mode)
-	   (add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
-	 #+END_SRC
-**** Python
-	 #+BEGIN_SRC emacs-lisp
-       ;;(add-hook 'python-mode-hook 'flycheck-mode)
-	   ;;(add-hook 'python-mode-hook #'flycheck-python-setup)
-	 #+END_SRC
-   
-** Web Mode
-   Check out https://web-mode.org/ to read up on how to use this. It adds some cool features for working with web files
-   #+BEGIN_SRC emacs-lisp
-	 (use-package web-mode)
-	 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-	 (setq web-mode-extra-auto-pairs
-		   '(("erb"  . (("beg" "end")))
-			 ("php"  . (("beg" "end")
-						("beg" "end")))
-			 ))
-	 (setq web-mode-enable-auto-pairing t)
-   #+END_SRC
-* Modeline
-  Currently using the suggested theme from WitchMacs, but plan to make a custom one later
-  #+BEGIN_SRC emacs-lisp
-	(use-package diminish  ;; Keep the line from getting cluttered with modes
-	  :ensure t)
-	(use-package spaceline
-	  :ensure t)
-	(use-package powerline
-	  :ensure t
-	  :init
-	  (spaceline-spacemacs-theme)
-	  :hook
-	  ('after-init-hook) . 'powerline-reset)
-  #+END_SRC
-* Syntax Highlighting
-** Nix
-   Gives syntax highlighting for .nix files such as configuration.nix
-   #+BEGIN_SRC emacs-lisp
-	 (use-package nix-mode
-	   :mode "\\.nix\\'")
-   #+END_SRC
-** Haskell
-   Give syntax highlighting for haskell files
-   #+BEGIN_SRC emacs-lisp
-	 (use-package haskell-mode
-	   :mode "\\.hs\\'")
-   #+END_SRC
-** Go
-   Syntax Checking for go
-   #+BEGIN_SRC emacs-lisp
-	 (use-package go-mode)
-   #+END_SRC
-** Colors
-   Highlight hex color values with the appropriate colors. 
-   #+BEGIN_SRC emacs-lisp
-	 (use-package rainbow-mode
-	   :ensure t
-	   :diminish rainbow-mode
-	   :init
-	   (rainbow-mode))
-   #+END_SRC
-* Dashboard
-  This is the epic startpage with Remilia you see when booting Emacs
-  #+BEGIN_SRC emacs-lisp
-	(use-package dashboard
-	  :ensure t
-	  :preface
-	  (defun create-scratch-buffer ()
-		"Create a scratch buffer"
-		(interactive)
-		(switch-to-buffer (get-buffer-create "*scratch*"))
-		(lisp-interaction-mode))
-	  :config
-	  (dashboard-setup-startup-hook)
-	  (setq dashboard-banner-logo-title "An Emacs Distro for the Devilish User") 
-	  (setq dashboard-startup-banner "~/.emacs.d/logo.png") 
-	  (setq dashboard-center-content t) 
-	  (setq dashboard-show-shortcuts nil) 
-	  ;; (setq dashboard-set-footer nil) ;; Disables messages at the bottom
-	  (setq dashboard-set-init-info t) 
-	  (setq dashboard-init-info (format "%d youkai entered Gensokyou in %s"
-										(length package-activated-list) (emacs-init-time))) 
-	  (setq dashboard-set-navigator t) 
-	  (setq dashboard-items '((recents . 3)
-							  (agenda . 5)))
-	  (setq dashboard-navigator-buttons
-			`(;; line1
-			  ((,nil
-				"Config"
-				"Edit Emacs Config File init.el"
-				(lambda (&rest _) (find-file "~/.emacs.d/init.org"))
-				'default)
-			   (nil
-				"Scratchpad"
-				"Open a scratch buffer"
-				(lambda (&rest _) (create-scratch-buffer))
-				'default)
-			   (nil
-				"Todo"
-				"Open the TODO list file"
-				(lambda (&rest _) (find-file "~/docs/org/TODO.org"))
-				'default))
-			  ((,nil ;;line 2
-				"Githhub"
-				"Visit the github repo"
-				(lambda (&rest _) (browse-url "https://github.com/Ocillacubes/Emacs"))
-				'default))))
-	  (setq dashboard-footer-messages '("What, you don't have any manga or anything?"
-										"Fairies are completely useless."
-										"You know, watermelons look more like slices of meat than grapes."
-										"I rather dislike the sun..."))) 
-	(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*"))) ;; Allow emacs to load dashboard when running as a daemon
-  #+END_SRC
-
-* Magit
-  This basically just enables it, I currently haven't tested magit out yet so once I figure it out I'll add some more stuff here
-  #+BEGIN_SRC emacs-lisp
-	(use-package magit
-	  :ensure t
-	  :diminish)
-  #+END_SRC
-
-* Undo/Redo
-  Evil mode breaks undo/redo, but this fixes it
-  #+BEGIN_SRC emacs-lisp
-	(use-package undo-tree
-	  :ensure t
-	  :diminish undo-tree-mode)
-	(global-undo-tree-mode)
-	(define-key evil-normal-state-map "u" 'undo-tree-undo)
-	(define-key evil-normal-state-map (kbd "C-r") 'undo-tree-redo)
-  #+END_SRC
-  
-* Eshell
-  Eshell give you a basic shell in emacs, although a lot of things break in it. Only use it for basic commands. As of right now, this is pretty much just the WitchMacs cfg until I figure more out with it
-  #+BEGIN_SRC emacs-lisp
-	(setq eshell-prompt-regexp "^[^αλ\n]*[αλ] ")
-	(setq eshell-prompt-function
-		  (lambda nil
-			(concat
-			 (if (string= (eshell/pwd) (getenv "HOME"))
-				 (propertize "~" 'face `(:foreground "#99CCFF"))
-			   (replace-regexp-in-string
-				(getenv "HOME")
-				(propertize "~" 'face `(:foreground "#99CCFF"))
-				(propertize (eshell/pwd) 'face `(:foreground "#99CCFF"))))
-			 (if (= (user-uid) 0)
-				 (propertize " α " 'face `(:foreground "#FF6666"))
-			   (propertize " λ " 'face `(:foreground "#A6E22E"))))))
-
-	(setq eshell-highlight-prompt nil)
-	(defun eshell-other-window ()
-	  "Create or visit an eshell buffer."
-	  (interactive)
-	  (if (not (get-buffer "*eshell*"))
-		  (progn
-			(split-window-sensibly (selected-window))
-			(other-window 1)
-			(eshell))
-		(switch-to-buffer-other-window "*eshell*")))
-
-	(global-set-key (kbd "<s-C-return>") 'eshell-other-window)
-  #+END_SRC
-
-* Emms
-  A player player inside your text editor! This config inspired by Uncle Dave on Youtube, as I was having trouble getting this to work
-  #+BEGIN_SRC emacs-lisp
-	(use-package emms
-	  :ensure t
-	  :bind
-	  ("s-m p" . emms)
-	  ("s-m b" . emms-smart-browse)
-	  (:map emms-playlist-mode-map
-			("d" . emms-play-directory)
-			("p" . emms-start)
-			("k" . emms-previous)
-			("j" . emms-next)
-			("x" . emms-shuffle)
-			("s" . emms-stop))
-	  :config
-	  (require 'emms-setup)
-	  (emms-all)
-	  (setq emms-player-list '(emms-player-mpd))
-	  (setq emms-info-functions '(emms-info-mpd))
-	  (require 'emms-player-mpd))
-	(setq mpc-host "localhost:6600")
-	(defun mpd/update-database ()
-	  "Updates the MPD Database"
-	  (interactive)
-	  (call-process "mpc" nil nil nil "update")
-	  (message "Updated MPD database"))
-	(global-set-key (kbd "s-m u") 'mpd/update-database)
-	(defun mpd/start-music-daemon ()
-	  "Start MPD, connect to it, and sync"
-	  (interactive)
-	  (shell-command "mpd")
-	  (mpd/update-database)
-	  (emms-player-mpd-connect)
-	  (emms-cache-set-from-mpd-all)
-	  (message "Initialized MPD"))
-	(global-set-key (kbd "s-m c") 'mpd/start-music-daemon)
-	(defun mpd/kill-music-daemon ()
-	  "Stops music and yeets MPD"
-	  (interactive)
-	  (emms-stop)
-	  (call-process "killall" nil nil nil "mpd")
-	  (message "Killed MPD"))
-	(global-set-key (kbd "s-m k") 'mpd/kill-music-daemon)
-  #+END_SRC
-  
-* mu4e
-  Mu4e is a mail client for emails, based off mu (mu for emacs). As with most stuff in this config, it's currently a very WIP
+Pair brackets together and highlight matching brackets
+#+begin_src emacs-lisp
+(setq electric-pair-pairs '(
+			    (?\{ . ?\})
+			    (?\( . ?\))
+			    (?\[ . ?\])
+			    (?\" . ?\")
+			    ))
+(electric-pair-mode t)
+(show-paren-mode 1) 
+#+end_src
 * Org Mode
-  Org mode is a sort of markup style section of emacs which is very powerful. In fact, this document is written in org mode, and work as the config for emacs, just tangled into an init.el. 
-* Backup Files
-  Stop backup files from cluttering up everywhere
-  #+BEGIN_SRC emacs-lisp
-	(setq make-backup-files nil)
-	(setq auto-save-default nil)
-  #+END_SRC
-* Other
-** Path
-   Emacs doesn't like my path when loaded from outside a terminal, so I set it here to add GOPATH/bin.
-   #+BEGIN_SRC emacs-lisp
-	 (setenv "PATH"
-			 (concat
-			  (getenv "PATH")
-			  ":" (getenv "HOME") "/go/bin"
-			  )
-			 )
-	 (setenv "GOPATH"
-			 (concat
-			  (getenv "HOME") "/go/bin"))
-   #+END_SRC
-** Other
-   Most of this is autogenerated things to just leave, except the first line
-   #+BEGIN_SRC emacs-lisp
-	 (setq use-package-always-defer t) ;; Try to speed boot by not loading some packages
-	 (custom-set-faces
-	  ;; custom-set-faces was added by Custom.
-	  ;; If you edit it by hand, you could mess it up, so be careful.
-	  ;; Your init file should contain only one such instance.
-	  ;; If there is more than one, they won't work right.
-	  )
+** Org Tempo
+This allows creating of source blocks with <sTAB , as well as other similar things
+#+BEGIN_SRC emacs-lisp
+(use-package org-tempo
+  :ensure nil)
+#+END_SRC
+** Native syntax highlighting
+Use the language's syntax highlighting for code blocks
+#+begin_src emacs-lisp
+(setq org-src-fontify-natively t
+      org-src-tab-acts-natively t
+      org-confirm-babel-evaluate nil
+      org-edit-src-content-indentation 0)
+#+end_src
+** Bullets
+Makes * ** etc appears as bullet points rather than *s
+#+begin_src emacs-lisp
+(use-package org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+end_src
+** Indents
+#+begin_src emacs-lisp
+(add-hook 'org-mode-hook 'org-indent-mode)
+#+end_src
+** Org directory
+#+begin_src emacs-lisp
+(setq org-directory "~/docs/org")
+#+end_src
+* Projectile
+Projectile is a tool for managing "projects" and easily working with files in one.
+#+begin_src emacs-lisp
+(use-package projectile
+  :config
+  (projectile-global-mode 1))
+#+end_src
 
-	 ;; Only have this once, carefule not to screw it up
-	 (custom-set-variables
-	  ;; custom-set-variables was added by Custom.
-	  ;; If you edit it by hand, you could mess it up, so be careful.
-	  ;; Your init file should contain only one such instance.
-	  ;; If there is more than one, they won't work right.
-	  '(custom-safe-themes
-		'("7661b762556018a44a29477b84757994d8386d6edee909409fabe0631952dad9" default))
-	  '(initial-frame-alist '((fullscreen . maximized)))
-	  '(tab-width 4)
-	  '(package-selected-packages
-		'(emms treemacs-icons-dired treemacs-evil treemacs gruvbox-theme magit undo-tree swiper which-key spaceline powerline nix-mode ivy evil use-package)))
-   #+END_SRC
-  
+* Swiper
+Swiper is a tool for finding text in a file
+#+begin_src emacs-lisp
+(use-package swiper)
+#+end_src
+
+* Files
+** Dired
+Built in file manager
+*** Binds
+#+begin_src emacs-lisp
+(with-eval-after-load 'dired
+  (evil-define-key'(normal visual) dired-mode-map (kbd "h") 'dired-up-directory)
+  (evil-define-key'(normal visual) dired-mode-map (kbd "l") 'dired-open-file))
+#+end_src
+*** Give icons in dired
+#+begin_src emacs-lisp
+(use-package all-the-icons-dired)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+#+end_src
+*** Dired open
+Allows files to be opened straight from dired
+#+begin_src emacs-lisp
+(use-package dired-open)
+(setq dired-open-extensions '(("jpg" . "feh")
+			      ("png" . "feh")
+			      ("gif" . "feh")
+			      ("mkv" . "mpv")
+			      ("mp4" . "mpv")
+			      ("flac" . "mpv")
+			      ("mp3" . "mpv")
+			      ("pdf" . "zathura")))
+#+end_src
+** Treemacs
+A file explorer similar to Treemacs
+#+begin_src emacs-lisp
+(use-package treemacs
+  :defer t
+  :init
+  :config
+  (progn
+    (setq
+     treemacs-width        30)
+    (treemacs-resize-icons 11)))
+(use-package treemacs-evil
+  :after treemacs evil
+  :ensure t)
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :ensure t
+  :config (treemacs-icons-dired-mode))
+#+End_src
+* Shell/Terminal
+** Set shell
+Sets the shell to zsh because zsh pog
+#+begin_src emacs-lisp
+(setq shell-file-name "/bin/zsh"
+      vterm-max-scrollback 1000)
+#+end_src
+** Eshell
+#+begin_src emacs-lisp
+(use-package eshell-syntax-highlighting
+  :after esh-mode
+  :config
+  (eshell-syntax-highlighting-global-mode +1))
+(setq eshell-aliases-file "~/.emacs.d/eshell_alias"
+      eshell-history-size 1000)
+#+end_src
+** Vterm
+A terminal emulator inside of emacs
+#+begin_src emacs-lisp
+(use-package vterm)
+#+end_src
+
+* Code
+Here I have things that are useful specifically for programming, such as LSP, syntax highlighting, and the likes
+** Syntax Highlighting
+*** Nix
+#+begin_src emacs-lisp
+(use-package nix-mode
+  :mode "\\.nix\\'")
+#+end_src
+*** Haskell
+#+begin_src emacs-lisp
+(use-package haskell-mode
+  :mode "\\.hs\\'")
+#+end_src
+*** Go
+#+begin_src emacs-lisp
+(use-package go-mode)
+#+end_src
+** Company
+Company gives a big large drop down menu to choose from
+#+begin_src emacs-lisp
+(use-package company)
+(setq company-idle-delay 0)
+(setq company-minimum-prefix-length 1)
+#+end_src
+** LSP
+LSP stands for Language Server Protocol, and gives emacs some cool features for working with programming languages
+*** Base
+#+begin_src emacs-lisp
+(use-package lsp-mode)
+(use-package lsp-ui
+  :diminish
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+#+end_src
+*** Go
+#+begin_src emacs-lisp
+(defun lsp-go-install-save-hooks () -- Taken from an article on GeekSocket by Bhavin Gandhi
+       (add-hook 'before-save-hook #'lsp-format-buffer t t)
+       (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook #'lsp-deferred)
+#+end_src
+*** Python
+#+begin_src emacs-lisp
+(use-package lsp-python-ms
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+			 (require 'lsp-python-ms)
+			 (lsp))))
+#+end_src
+** Flycheck
+Flycheck provides syntax checking
+*** Base
+#+begin_src emacs-lisp
+(use-package flycheck)
+#+end_src
+*** Haskell
+#+begin_src emacs-lisp
+(use-package flycheck-haskell)
+(add-hook 'haskell-mode-hook 'flycheck-mode)
+(add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
+#+end_src
+** Web mode
+Web mode adds some nice features for working with web based files such as html
+#+begin_src emacs-lisp
+(use-package web-mode)
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(setq web-mode-extra-auto-pairs
+      '(("erb"  . (("beg" "end")))
+	("php"  . (("beg" "end")
+		   ("beg" "end")))
+	))
+(setq web-mode-enable-auto-pairing t)
+#+end_src
