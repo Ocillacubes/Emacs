@@ -41,6 +41,7 @@
   "r r"    '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
   "h h"    '(mark-whole-buffer :which-key "Select the entire file")
   "\\"     '(indent-region :which-key "Auto indent everything")
+  "e"      '(eww :which-key "Open Browser")
 
   "w c"    '(evil-window-delete :which-key "Close Window")
   "w n"    '(evil-window-new :which-key "New Window")
