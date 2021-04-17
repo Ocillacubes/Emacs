@@ -30,9 +30,11 @@
   :config
   (general-evil-setup t))
 
-(nvmap :prefix "SPC" ;; very original yes
+(nvmap :prefix "SPC"
   "SPC"    '(counsel-M-x :which-key "M-x") ;; Broken
   "f f"    '(find-file :which-key "Find File")
+  "f d"    '(dired :which-key "Open dired")
+  "f t"    '(treemacs :which-key "Open treemacs")
   "o t"    '(org-babel-tangle :which-key "Tangle Org File")
   "s"      '(swiper :which-key "Search in File")
   "r r"    '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
@@ -51,6 +53,11 @@
 
   "t t"      '(vterm :which-key "Open terminal emulator")
   "t e"      '(eshell :which-key "Open eshell")
+
+  "b b"      '(ibuffer :which-key "List buffers")
+  "b c"      '(kill-current-buffer :which-key "Kill current buffer")
+  "b h"      '(previous-buffer :which-key "Preivous buffer")
+  "b l"      '(next-buffer :which-key "Next buffer")
   )
 
 (menu-bar-mode -1)
@@ -59,7 +66,8 @@
 (setq inhibit-startup-message t) 
 (tooltip-mode -1)
 
-(global-display-line-numbers-mode 1)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
 
 (global-visual-line-mode t)
 
@@ -70,7 +78,6 @@
 (global-prettify-symbols-mode t)
 
 (use-package dashboard
-  :ensure t
   :preface
   (defun create-scratch-buffer ()
     "Create a scratch buffer"
@@ -121,6 +128,14 @@
 
 (use-package all-the-icons)
 
+(use-package diminish)
+(use-package spaceline)
+(use-package powerline
+  :init
+  (spaceline-spacemacs-theme)
+  :hook
+  ('after-init-hook) . 'powerline-reset)
+
 (use-package which-key)
 (which-key-mode)
 
@@ -147,7 +162,6 @@
 (setq x-select-enable-clipboard t)
 
 (use-package undo-tree
-  :ensure t
   :diminish)
 (global-undo-tree-mode)
 (define-key evil-normal-state-map "u" 'undo-tree-undo)
@@ -186,6 +200,39 @@
 
 (use-package swiper)
 
+(with-eval-after-load 'dired
+  (evil-define-key'(normal visual) dired-mode-map (kbd "h") 'dired-up-directory)
+  (evil-define-key'(normal visual) dired-mode-map (kbd "l") 'dired-open-file))
+
+(use-package all-the-icons-dired)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+
+(use-package dired-open)
+(setq dired-open-extensions '(("jpg" . "feh")
+			      ("png" . "feh")
+			      ("gif" . "feh")
+			      ("mkv" . "mpv")
+			      ("mp4" . "mpv")
+			      ("flac" . "mpv")
+			      ("mp3" . "mpv")
+			      ("pdf" . "zathura")))
+
+(use-package treemacs
+  :defer t
+  :init
+  :config
+  (progn
+    (setq
+     treemacs-width        30)
+    (treemacs-resize-icons 11)))
+(use-package treemacs-evil
+  :after treemacs evil
+  :ensure t)
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :ensure t
+  :config (treemacs-icons-dired-mode))
+
 (setq shell-file-name "/bin/zsh"
       vterm-max-scrollback 1000)
 
@@ -197,3 +244,61 @@
       eshell-history-size 1000)
 
 (use-package vterm)
+
+(use-package nix-mode
+  :mode "\\.nix\\'")
+
+(use-package haskell-mode
+  :mode "\\.hs\\'")
+
+(use-package go-mode)
+
+(use-package company)
+(setq company-idle-delay 0)
+(setq company-minimum-prefix-length 1)
+
+(use-package lsp-mode)
+(use-package lsp-ui
+  :diminish
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+(defun lsp-go-install-save-hooks () -- Taken from an article on GeekSocket by Bhavin Gandhi
+       (add-hook 'before-save-hook #'lsp-format-buffer t t)
+       (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook #'lsp-deferred)
+
+(use-package lsp-python-ms
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+			 (require 'lsp-python-ms)
+			 (lsp))))
+
+(use-package flycheck)
+
+(use-package flycheck-haskell)
+(add-hook 'haskell-mode-hook 'flycheck-mode)
+(add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
+
+(use-package web-mode)
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(setq web-mode-extra-auto-pairs
+      '(("erb"  . (("beg" "end")))
+	("php"  . (("beg" "end")
+		   ("beg" "end")))
+	))
+(setq web-mode-enable-auto-pairing t)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(web-mode flycheck-haskell flycheck lsp-python-ms lsp-ui lsp-mode company go-mode haskell-mode nix-mode spaceline diminish treemacs-icons-dired treemacs-evil treemacs which-key vterm use-package undo-tree projectile org-bullets gruvbox-theme general evil-collection eshell-syntax-highlighting dired-open dashboard counsel all-the-icons-dired)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

@@ -55,9 +55,11 @@ Package for setting keybinds, this section based off the config DT wrote on stre
 #+end_src
 *** Configure keybinds
 #+begin_src emacs-lisp
-(nvmap :prefix "SPC" ;; very original yes
+(nvmap :prefix "SPC"
   "SPC"    '(counsel-M-x :which-key "M-x") ;; Broken
   "f f"    '(find-file :which-key "Find File")
+  "f d"    '(dired :which-key "Open dired")
+  "f t"    '(treemacs :which-key "Open treemacs")
   "o t"    '(org-babel-tangle :which-key "Tangle Org File")
   "s"      '(swiper :which-key "Search in File")
   "r r"    '((lambda () (interactive) (load-file "~/.emacs.d/init.el")) :which-key "Reload emacs config")
@@ -76,6 +78,11 @@ Package for setting keybinds, this section based off the config DT wrote on stre
 
   "t t"      '(vterm :which-key "Open terminal emulator")
   "t e"      '(eshell :which-key "Open eshell")
+
+  "b b"      '(ibuffer :which-key "List buffers")
+  "b c"      '(kill-current-buffer :which-key "Kill current buffer")
+  "b h"      '(previous-buffer :which-key "Preivous buffer")
+  "b l"      '(next-buffer :which-key "Next buffer")
   )
 #+end_src
 * Appearance
@@ -89,7 +96,8 @@ Package for setting keybinds, this section based off the config DT wrote on stre
 #+END_SRC
 ** Line numbers
 #+BEGIN_SRC emacs-lisp
-(global-display-line-numbers-mode 1)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
 #+END_SRC
 ** Wrap lines
 #+BEGIN_SRC emacs-lisp
@@ -112,7 +120,6 @@ Make symbols show up as their symbols
 Setup the home screen shown when loading emacs
 #+BEGIN_SRC emacs-lisp
 (use-package dashboard
-  :ensure t
   :preface
   (defun create-scratch-buffer ()
     "Create a scratch buffer"
@@ -170,6 +177,17 @@ Support for displaying icons
 #+begin_src emacs-lisp
 (use-package all-the-icons)
 #+end_src
+** Modeline
+Currently just the modeline suggested by witchmacs, but will make a custom one later
+#+begin_src emacs-lisp
+(use-package diminish)
+(use-package spaceline)
+(use-package powerline
+  :init
+  (spaceline-spacemacs-theme)
+  :hook
+  ('after-init-hook) . 'powerline-reset)
+#+end_src
 * Autocomplete
 ** Which Key
 Displays keybinds that come after what you've pressed so far
@@ -200,7 +218,6 @@ Auto complete for M-x commands
   :config
   (ivy-mode 1))
 #+end_src
-* Syntax Highlighting
 * Behavior
 ** Copy/Paste
 Enable support for copy pasting between emacs and the regualr clipboard
@@ -211,7 +228,6 @@ Enable support for copy pasting between emacs and the regualr clipboard
 Makes undo/redo work better with evil mode
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
-  :ensure t
   :diminish)
 (global-undo-tree-mode)
 (define-key evil-normal-state-map "u" 'undo-tree-undo)
@@ -280,6 +296,52 @@ Swiper is a tool for finding text in a file
 (use-package swiper)
 #+end_src
 
+* Files
+** Dired
+Built in file manager
+*** Binds
+#+begin_src emacs-lisp
+(with-eval-after-load 'dired
+  (evil-define-key'(normal visual) dired-mode-map (kbd "h") 'dired-up-directory)
+  (evil-define-key'(normal visual) dired-mode-map (kbd "l") 'dired-open-file))
+#+end_src
+*** Give icons in dired
+#+begin_src emacs-lisp
+(use-package all-the-icons-dired)
+(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+#+end_src
+*** Dired open
+Allows files to be opened straight from dired
+#+begin_src emacs-lisp
+(use-package dired-open)
+(setq dired-open-extensions '(("jpg" . "feh")
+			      ("png" . "feh")
+			      ("gif" . "feh")
+			      ("mkv" . "mpv")
+			      ("mp4" . "mpv")
+			      ("flac" . "mpv")
+			      ("mp3" . "mpv")
+			      ("pdf" . "zathura")))
+#+end_src
+** Treemacs
+A file explorer similar to Treemacs
+#+begin_src emacs-lisp
+(use-package treemacs
+  :defer t
+  :init
+  :config
+  (progn
+    (setq
+     treemacs-width        30)
+    (treemacs-resize-icons 11)))
+(use-package treemacs-evil
+  :after treemacs evil
+  :ensure t)
+(use-package treemacs-icons-dired
+  :after treemacs dired
+  :ensure t
+  :config (treemacs-icons-dired-mode))
+#+End_src
 * Shell/Terminal
 ** Set shell
 Sets the shell to zsh because zsh pog
@@ -300,4 +362,79 @@ Sets the shell to zsh because zsh pog
 A terminal emulator inside of emacs
 #+begin_src emacs-lisp
 (use-package vterm)
+#+end_src
+
+* Code
+Here I have things that are useful specifically for programming, such as LSP, syntax highlighting, and the likes
+** Syntax Highlighting
+*** Nix
+#+begin_src emacs-lisp
+(use-package nix-mode
+  :mode "\\.nix\\'")
+#+end_src
+*** Haskell
+#+begin_src emacs-lisp
+(use-package haskell-mode
+  :mode "\\.hs\\'")
+#+end_src
+*** Go
+#+begin_src emacs-lisp
+(use-package go-mode)
+#+end_src
+** Company
+Company gives a big large drop down menu to choose from
+#+begin_src emacs-lisp
+(use-package company)
+(setq company-idle-delay 0)
+(setq company-minimum-prefix-length 1)
+#+end_src
+** LSP
+LSP stands for Language Server Protocol, and gives emacs some cool features for working with programming languages
+*** Base
+#+begin_src emacs-lisp
+(use-package lsp-mode)
+(use-package lsp-ui
+  :diminish
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+#+end_src
+*** Go
+#+begin_src emacs-lisp
+(defun lsp-go-install-save-hooks () -- Taken from an article on GeekSocket by Bhavin Gandhi
+       (add-hook 'before-save-hook #'lsp-format-buffer t t)
+       (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook #'lsp-deferred)
+#+end_src
+*** Python
+#+begin_src emacs-lisp
+(use-package lsp-python-ms
+  :init (setq lsp-python-ms-auto-install-server t)
+  :hook (python-mode . (lambda ()
+			 (require 'lsp-python-ms)
+			 (lsp))))
+#+end_src
+** Flycheck
+Flycheck provides syntax checking
+*** Base
+#+begin_src emacs-lisp
+(use-package flycheck)
+#+end_src
+*** Haskell
+#+begin_src emacs-lisp
+(use-package flycheck-haskell)
+(add-hook 'haskell-mode-hook 'flycheck-mode)
+(add-hook 'haskell-mode-hook #'flycheck-haskell-setup)
+#+end_src
+** Web mode
+Web mode adds some nice features for working with web based files such as html
+#+begin_src emacs-lisp
+(use-package web-mode)
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(setq web-mode-extra-auto-pairs
+      '(("erb"  . (("beg" "end")))
+	("php"  . (("beg" "end")
+		   ("beg" "end")))
+	))
+(setq web-mode-enable-auto-pairing t)
 #+end_src
