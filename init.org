@@ -83,6 +83,11 @@ Package for setting keybinds, this section based off the config DT wrote on stre
   ";"      '(comment-line :which-key "Comment Line")
   "r c"    '(rainbow-mode :which-key "Toggle Rainbox Mode")
 
+  "p s"    '(org-present :which-key "Present")
+  "p n"    '(org-present-next :which-key "Next Slide")
+  "p p"    '(org-present-prev :which-key "Previous Slide")
+  "p q"    '(org-present-quit :which-key "End presentation")
+
   "w c"    '(evil-window-delete :which-key "Close Window")
   "w n"    '(evil-window-new :which-key "New Window")
   "w s"    '(evil-window-split :which-key "Horizontal Split")
@@ -205,6 +210,12 @@ Currently just the modeline suggested by witchmacs, but will make a custom one l
   :hook
   ('after-init-hook) . 'powerline-reset)
 #+end_src
+** Latex
+#+begin_src emacs-lisp
+(require 'org)
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2))
+  (setq org-latex-create-formula-image-program 'dvisvgm)
+#+end_src
 * Autocomplete
 ** Which Key
 Displays keybinds that come after what you've pressed so far
@@ -298,6 +309,10 @@ Makes * ** etc appears as bullet points rather than *s
 ** Org directory
 #+begin_src emacs-lisp
 (setq org-directory "~/docs/org")
+#+end_src
+** Org Present
+#+begin_src emacs-lisp
+(use-package org-present)
 #+end_src
 * Projectile
 Projectile is a tool for managing "projects" and easily working with files in one.

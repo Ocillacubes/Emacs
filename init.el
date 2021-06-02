@@ -45,6 +45,11 @@
   ";"      '(comment-line :which-key "Comment Line")
   "r c"    '(rainbow-mode :which-key "Toggle Rainbox Mode")
 
+  "p s"    '(org-present :which-key "Present")
+  "p n"    '(org-present-next :which-key "Next Slide")
+  "p p"    '(org-present-prev :which-key "Previous Slide")
+  "p q"    '(org-present-quit :which-key "End presentation")
+
   "w c"    '(evil-window-delete :which-key "Close Window")
   "w n"    '(evil-window-new :which-key "New Window")
   "w s"    '(evil-window-split :which-key "Horizontal Split")
@@ -142,6 +147,10 @@
   :hook
   ('after-init-hook) . 'powerline-reset)
 
+(require 'org)
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 2))
+  (setq org-latex-create-formula-image-program 'dvisvgm)
+
 (use-package which-key)
 (which-key-mode)
 
@@ -199,6 +208,8 @@
 (add-hook 'org-mode-hook 'org-indent-mode)
 
 (setq org-directory "~/docs/org")
+
+(use-package org-present)
 
 (use-package projectile
   :config
@@ -300,16 +311,3 @@
 		   ("beg" "end")))
 	))
 (setq web-mode-enable-auto-pairing t)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(gruvbox-theme web-mode flycheck-haskell flycheck lsp-python-ms lsp-ui lsp-mode company rainbow-mode go-mode haskell-mode nix-mode vterm eshell-syntax-highlighting treemacs-icons-dired treemacs-evil treemacs dired-open all-the-icons-dired projectile org-bullets undo-tree counsel which-key spaceline diminish all-the-icons dashboard autothemer general evil-collection evil use-package)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
